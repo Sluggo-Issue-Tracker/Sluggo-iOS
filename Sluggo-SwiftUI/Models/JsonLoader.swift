@@ -48,72 +48,58 @@ class JsonLoader {
         // Attempt stringifying the data, this is failable, which is fine since property is optional.
         return jsonData
     }
-
-    static func executeCodableRequest<T: Codable>(request: URLRequest,
-                                                  completionHandler: @escaping (Result<T, Error>) -> Void) {
+    
+    static func executeCodableRequest<T: Codable>(request: URLRequest) async -> Result<T, Error> {
 
         let session = URLSession.shared
-        session.dataTask(with: request, completionHandler: { data, response, error -> Void in
-            if error != nil {
-                completionHandler(.failure(Exception.runtimeError(message: "Server Error!")))
-                return
-            }
-            // swiftlint:disable:next force_cast
+        do {
+            var (data, response) = try await session.data(for: request)
             let resp = response as! HTTPURLResponse
             if resp.statusCode <= 299 && resp.statusCode >= 200 {
                 if let fetchedData = data {
                     guard let record: T = JsonLoader.decode(data: fetchedData) else {
                         print(String(data: fetchedData, encoding: .utf8) ?? "Failed to print returned values")
                         let errorMessage = "Failure to decode retrieved model in JsonLoader Codable Request"
-                        completionHandler(.failure(RESTException.failedRequest(message: errorMessage)))
-                        return
+                        return .failure(RESTException.failedRequest(message: errorMessage))
                     }
-                    completionHandler(.success(record))
-                    return
+                    return .success(record)
                 } else {
                     let errorMessage = "Failure to decode retrieved data in JsonLoader Codable request"
-                    completionHandler(.failure(RESTException.failedRequest(message: errorMessage)))
-                    return
+                    return .failure(RESTException.failedRequest(message: errorMessage))
                 }
             } else {
                 if let fetchedData = data {
                     let fetchedString = String(data: fetchedData, encoding: .utf8) ?? "A parsing error occurred"
                     let errorMessage = "HTTP Error \(resp.statusCode): \(fetchedString)"
-                    completionHandler(.failure(RESTException.failedRequest(message: errorMessage)))
-                    return
+                    return .failure(RESTException.failedRequest(message: errorMessage))
                 }
                 let errorMessage = "HTTP Error \(resp.statusCode): An unknown error occured."
-                completionHandler(.failure(RESTException.failedRequest(message: errorMessage)))
-                return
+                return .failure(RESTException.failedRequest(message: errorMessage))
             }
-        }).resume()
+        }
+        catch {
+            return .failure(Exception.runtimeError(message: "Server Error!"))
+        }
     }
 
-    static func executeEmptyRequest(request: URLRequest,
-                                    completionHandler: @escaping (Result<Void, Error>) -> Void) {
-
+    static func executeEmptyRequest(request: URLRequest) async -> Result<Void, Error> {
         let session = URLSession.shared
-        session.dataTask(with: request, completionHandler: { data, response, error -> Void in
-            if error != nil {
-                completionHandler(.failure(Exception.runtimeError(message: "Server Error!")))
-                return
-            }
-            // swiftlint:disable:next force_cast
+        do {
+            let (data, response) = try await session.data(for: request)
             let resp = response as! HTTPURLResponse
             if resp.statusCode <= 299 && resp.statusCode >= 200 {
-                completionHandler(.success(()))
-                return
+                return .success(())
             } else {
                 if let fetchedData = data {
                     let fetchedString = String(data: fetchedData, encoding: .utf8) ?? "A parsing error occurred"
                     let errorMessage = "HTTP Error \(resp.statusCode): \(fetchedString)"
-                    completionHandler(.failure(RESTException.failedRequest(message: errorMessage)))
-                    return
+                    return .failure(RESTException.failedRequest(message: errorMessage))
                 }
                 let errorMessage = "HTTP Error \(resp.statusCode): An unknown error occured."
-                completionHandler(.failure(RESTException.failedRequest(message: errorMessage)))
-                return
+                return .failure(RESTException.failedRequest(message: errorMessage))
             }
-        }).resume()
+        catch {
+           return .failure(Exception.runtimeError(message: "Server Error!"))
+        }
     }
 }
