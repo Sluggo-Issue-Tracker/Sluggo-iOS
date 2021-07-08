@@ -36,7 +36,6 @@
 		2F2E6C582693BA0300968B3A /* PinnedTicketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C382693BA0200968B3A /* PinnedTicketManager.swift */; };
 		2F2E6C592693BA0300968B3A /* InviteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C392693BA0200968B3A /* InviteManager.swift */; };
 		2F2E6C5A2693BA0300968B3A /* StatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3A2693BA0200968B3A /* StatusManager.swift */; };
-		2F2E6C5B2693BA0300968B3A /* BaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3B2693BA0200968B3A /* BaseManager.swift */; };
 		2F2E6C5C2693BA0300968B3A /* MemberManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3C2693BA0200968B3A /* MemberManager.swift */; };
 		2F2E6C5D2693BA0300968B3A /* TeamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3D2693BA0200968B3A /* TeamManager.swift */; };
 		2F2E6C5E2693BA0300968B3A /* TicketFilterParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3E2693BA0200968B3A /* TicketFilterParameters.swift */; };
@@ -44,6 +43,7 @@
 		2F2E6C602693BA0300968B3A /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C402693BA0200968B3A /* AppIdentity.swift */; };
 		2F2E6C612693BA0300968B3A /* TeamPaginatedListable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C422693BA0200968B3A /* TeamPaginatedListable.swift */; };
 		2F2E6C622693BA0300968B3A /* HasTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C432693BA0200968B3A /* HasTitle.swift */; };
+		2F3614592696842A005B46F8 /* NullCodable in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3614582696842A005B46F8 /* NullCodable */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,7 +96,6 @@
 		2F2E6C382693BA0200968B3A /* PinnedTicketManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedTicketManager.swift; sourceTree = "<group>"; };
 		2F2E6C392693BA0200968B3A /* InviteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteManager.swift; sourceTree = "<group>"; };
 		2F2E6C3A2693BA0200968B3A /* StatusManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusManager.swift; sourceTree = "<group>"; };
-		2F2E6C3B2693BA0200968B3A /* BaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseManager.swift; sourceTree = "<group>"; };
 		2F2E6C3C2693BA0200968B3A /* MemberManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberManager.swift; sourceTree = "<group>"; };
 		2F2E6C3D2693BA0200968B3A /* TeamManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TeamManager.swift; sourceTree = "<group>"; };
 		2F2E6C3E2693BA0200968B3A /* TicketFilterParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TicketFilterParameters.swift; sourceTree = "<group>"; };
@@ -111,6 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F3614592696842A005B46F8 /* NullCodable in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,7 +233,6 @@
 				2F2E6C382693BA0200968B3A /* PinnedTicketManager.swift */,
 				2F2E6C392693BA0200968B3A /* InviteManager.swift */,
 				2F2E6C3A2693BA0200968B3A /* StatusManager.swift */,
-				2F2E6C3B2693BA0200968B3A /* BaseManager.swift */,
 				2F2E6C3C2693BA0200968B3A /* MemberManager.swift */,
 				2F2E6C3D2693BA0200968B3A /* TeamManager.swift */,
 			);
@@ -265,6 +264,9 @@
 			dependencies = (
 			);
 			name = "Sluggo-SwiftUI";
+			packageProductDependencies = (
+				2F3614582696842A005B46F8 /* NullCodable */,
+			);
 			productName = "Sluggo-SwiftUI";
 			productReference = 2F2E6BF62693B99C00968B3A /* Sluggo-SwiftUI.app */;
 			productType = "com.apple.product-type.application";
@@ -337,6 +339,9 @@
 				Base,
 			);
 			mainGroup = 2F2E6BED2693B99C00968B3A;
+			packageReferences = (
+				2F3614572696842A005B46F8 /* XCRemoteSwiftPackageReference "NullCodable" */,
+			);
 			productRefGroup = 2F2E6BF72693B99C00968B3A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -385,7 +390,6 @@
 				2F2E6C4D2693BA0200968B3A /* StatusRecord.swift in Sources */,
 				2F2E6C5A2693BA0300968B3A /* StatusManager.swift in Sources */,
 				2F2E6C452693BA0200968B3A /* TicketRecord.swift in Sources */,
-				2F2E6C5B2693BA0300968B3A /* BaseManager.swift in Sources */,
 				2F2E6C4B2693BA0200968B3A /* PaginatedList.swift in Sources */,
 				2F2E6C5E2693BA0300968B3A /* TicketFilterParameters.swift in Sources */,
 				2F2E6C482693BA0200968B3A /* TagRecord.swift in Sources */,
@@ -759,6 +763,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2F3614572696842A005B46F8 /* XCRemoteSwiftPackageReference "NullCodable" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/g-mark/NullCodable";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2F3614582696842A005B46F8 /* NullCodable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3614572696842A005B46F8 /* XCRemoteSwiftPackageReference "NullCodable" */;
+			productName = NullCodable;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2F2E6BEE2693B99C00968B3A /* Project object */;
 }
