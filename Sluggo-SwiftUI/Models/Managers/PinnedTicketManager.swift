@@ -12,10 +12,12 @@ class PinnedTicketManager {
     static let urlBase = "/pinned_tickets/"
     private var identity: AppIdentity
     private var member: MemberRecord
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, member: MemberRecord) {
+    init(identity: AppIdentity, member: MemberRecord, requestLoader: CanNetworkRequest = JsonLoader()) {
         self.identity = identity
         self.member = member
+        self.requestLoader = requestLoader
     }
 
     private func makeListURL() -> URL {
@@ -28,23 +30,21 @@ class PinnedTicketManager {
         return URL(string: makeListURL().absoluteString + "\(desiredID)/")!
     }
 
-    public func fetchPinnedTickets(completionHandler: @escaping(Result<[PinnedTicketRecord], Error>) -> Void) {
+    public func fetchPinnedTickets() async -> Result<[PinnedTicketRecord], Error> {
         let requestBuilder = URLRequestBuilder(url: makeListURL())
             .setMethod(method: .GET)
             .setIdentity(identity: identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 
-    public func postPinnedTicket(ticket: TicketRecord,
-                                 completionHandler: @escaping(Result<PinnedTicketRecord, Error>) -> Void) {
+    public func postPinnedTicket(ticket: TicketRecord) async -> Result<PinnedTicketRecord, Error> {
 
         let writeRecord = WritePinnedTicketRecord(ticket: ticket.id)
 
-        guard let body = JsonLoader.encode(object: writeRecord) else {
+        guard let body = type(of: requestLoader).encode(object: writeRecord) else {
             let errorMessage = "Failed to serialize write pinned ticket record in PinnedTicketManager"
-            completionHandler(.failure(Exception.runtimeError(message: errorMessage)))
-            return
+            return .failure(Exception.runtimeError(message: errorMessage))
         }
 
         let requestBuilder = URLRequestBuilder(url: makeListURL())
@@ -52,21 +52,19 @@ class PinnedTicketManager {
             .setData(data: body)
             .setIdentity(identity: identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 
-    public func deletePinnedTicket(pinned: PinnedTicketRecord,
-                                   completionHandler: @escaping(Result<Void, Error>) -> Void) {
+    public func deletePinnedTicket(pinned: PinnedTicketRecord) async -> Result<Void, Error> {
 
         let requestBuilder = URLRequestBuilder(url: makeDetailURL(desiredID: pinned.id))
             .setMethod(method: .DELETE)
             .setIdentity(identity: identity)
 
-        JsonLoader.executeEmptyRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
     }
 
-    public func fetchPinned(ticket: TicketRecord,
-                            completionHandler: @escaping(Result<PinnedTicketRecord, Error>) -> Void) {
+    public func fetchPinned(ticket: TicketRecord) async -> Result<PinnedTicketRecord, Error> {
 
         // MARK: MD5 hashing convenience
         func MD5String(for str: String) -> String {
@@ -86,6 +84,6 @@ class PinnedTicketManager {
             .setMethod(method: .GET)
             .setIdentity(identity: identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 }
