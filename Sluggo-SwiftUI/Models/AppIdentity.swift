@@ -9,9 +9,8 @@ import Foundation
 
 class AppIdentity: Codable {
 
-    private var _authenticatedUser: AuthRecord?
+    private var _authenticatedLogin: LoginRecord?
     private var _team: TeamRecord?
-    private var _token: String?
     private var _pageSize = 10
     private var _baseAddress: String = Constants.Config.URL_BASE
     private var persist: Bool = false
@@ -19,10 +18,10 @@ class AppIdentity: Codable {
     // MARK: Computed Properties
     var authenticatedUser: AuthRecord? {
         get {
-            return _authenticatedUser
+            return _authenticatedLogin?.user
         }
         set(newUser) {
-            _authenticatedUser = newUser
+            _authenticatedLogin?.user = newUser
             enqueueSave()
         }
     }
@@ -37,10 +36,19 @@ class AppIdentity: Codable {
     }
     var token: String? {
         get {
-            return _token
+            return _authenticatedLogin?.accessToken
         }
         set (newToken) {
-            _token = newToken
+            _authenticatedLogin?.accessToken = newToken
+            enqueueSave()
+        }
+    }
+    var refreshToken: String? {
+        get {
+            return _authenticatedLogin?.refreshToken
+        }
+        set (newToken) {
+            _authenticatedLogin?.refreshToken = newToken
             enqueueSave()
         }
     }

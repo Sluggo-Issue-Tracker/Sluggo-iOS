@@ -39,7 +39,7 @@ class TagManager: TeamPaginatedListable {
     }
 
     public func makeTag(tag: WriteTagRecord) async -> Result<TagRecord, Error> {
-        guard let body = type(of: requestLoader).encode(object: tag) else {
+        guard let body = BaseLoader.encode(object: tag) else {
             let errorMessage = "Failed to serialize tag JSON for makeTag in TagManager"
             return .failure(Exception.runtimeError(message: errorMessage))
         }

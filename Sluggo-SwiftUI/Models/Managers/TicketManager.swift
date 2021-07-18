@@ -47,7 +47,7 @@ class TicketManager {
     }
 
     public func makeTicket(ticket: WriteTicketRecord) async -> Result<TicketRecord, Error> {
-        guard let body = type(of: requestLoader).encode(object: ticket) else {
+        guard let body = BaseLoader.encode(object: ticket) else {
             let errorMessage = "Failed to serialize ticket JSON for makeTicket in TicketManager"
             return .failure(Exception.runtimeError(message: errorMessage))
         }
@@ -71,7 +71,7 @@ class TicketManager {
                                             title: ticket.title,
                                             description: ticket.description,
                                             dueDate: ticket.dueDate)
-        guard let body = type(of: requestLoader).encode(object: writeTicket) else {
+        guard let body = BaseLoader.encode(object: writeTicket) else {
             let errorMessage = "Failed to serialize ticket JSON for updateTicket in TicketManager"
             return .failure(Exception.runtimeError(message: errorMessage))
         }

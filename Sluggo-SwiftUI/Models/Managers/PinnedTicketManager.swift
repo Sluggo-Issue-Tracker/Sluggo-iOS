@@ -42,7 +42,7 @@ class PinnedTicketManager {
 
         let writeRecord = WritePinnedTicketRecord(ticket: ticket.id)
 
-        guard let body = type(of: requestLoader).encode(object: writeRecord) else {
+        guard let body = BaseLoader.encode(object: writeRecord) else {
             let errorMessage = "Failed to serialize write pinned ticket record in PinnedTicketManager"
             return .failure(Exception.runtimeError(message: errorMessage))
         }
