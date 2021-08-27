@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TeamManager: TeamPaginatedListable {
+class TeamManager {
 
     static let urlBase = "api/teams/"
     private var identity: AppIdentity
@@ -18,7 +18,7 @@ class TeamManager: TeamPaginatedListable {
         self.requestLoader = requestLoader
     }
 
-    func listFromTeams(page: Int) async -> Result<PaginatedList<TeamRecord>, Error> {
+    func listFromTeams(page: Int) async -> Result<[TeamRecord], Error> {
 
         let urlString = identity.baseAddress + TeamManager.urlBase + "?page=\(page)"
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)

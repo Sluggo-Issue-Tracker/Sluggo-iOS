@@ -36,7 +36,7 @@ class UnwindState<M: TeamPaginatedListable> {
 
 func unwindPaginationRecurse<M: TeamPaginatedListable>(state: UnwindState<M>) {
     // marks task as Async
-    async {
+    Task.init(priority: .background) {
         let result = await state.manager.listFromTeams(page: state.page)
         switch result {
         case .success(let record):
