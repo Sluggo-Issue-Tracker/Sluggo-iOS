@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct Sluggo_SwiftUIApp: App {
+    
+    var identity: AppIdentity = AppIdentity.loadFromDisk() ?? AppIdentity()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LaunchView()
         }
     }
 }

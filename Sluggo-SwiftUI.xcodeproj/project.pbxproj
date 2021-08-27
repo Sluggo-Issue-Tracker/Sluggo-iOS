@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2F2E6BFA2693B99C00968B3A /* Sluggo_SwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */; };
-		2F2E6BFC2693B99C00968B3A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6BFB2693B99C00968B3A /* ContentView.swift */; };
+		2F2E6BFC2693B99C00968B3A /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6BFB2693B99C00968B3A /* LaunchView.swift */; };
 		2F2E6BFE2693B99D00968B3A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F2E6BFD2693B99D00968B3A /* Assets.xcassets */; };
 		2F2E6C012693B99D00968B3A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F2E6C002693B99D00968B3A /* Preview Assets.xcassets */; };
 		2F2E6C0B2693B99E00968B3A /* Sluggo_SwiftUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C0A2693B99E00968B3A /* Sluggo_SwiftUITests.swift */; };
@@ -69,7 +69,7 @@
 /* Begin PBXFileReference section */
 		2F2E6BF62693B99C00968B3A /* Sluggo-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sluggo-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sluggo_SwiftUIApp.swift; sourceTree = "<group>"; };
-		2F2E6BFB2693B99C00968B3A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		2F2E6BFB2693B99C00968B3A /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
 		2F2E6BFD2693B99D00968B3A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F2E6C002693B99D00968B3A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2F2E6C062693B99E00968B3A /* Sluggo-SwiftUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Sluggo-SwiftUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -160,9 +160,10 @@
 		2F2E6BF82693B99C00968B3A /* Sluggo-SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				2F8BF67626D9A87000B9A221 /* Views */,
 				2F2E6C212693BA0200968B3A /* Models */,
 				2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */,
-				2F2E6BFB2693B99C00968B3A /* ContentView.swift */,
+				2F2E6BFB2693B99C00968B3A /* LaunchView.swift */,
 				2F2E6BFD2693B99D00968B3A /* Assets.xcassets */,
 				2F2E6BFF2693B99D00968B3A /* Preview Content */,
 			);
@@ -255,6 +256,13 @@
 				2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */,
 			);
 			path = Interfaces;
+			sourceTree = "<group>";
+		};
+		2F8BF67626D9A87000B9A221 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -409,7 +417,7 @@
 				2F2E6C592693BA0300968B3A /* InviteManager.swift in Sources */,
 				2F2E6C4E2693BA0200968B3A /* ErrorMessage.swift in Sources */,
 				2F2E6C622693BA0300968B3A /* HasTitle.swift in Sources */,
-				2F2E6BFC2693B99C00968B3A /* ContentView.swift in Sources */,
+				2F2E6BFC2693B99C00968B3A /* LaunchView.swift in Sources */,
 				2F2E6C552693BA0300968B3A /* TicketManager.swift in Sources */,
 				2F2E6C4A2693BA0200968B3A /* TeamRecord.swift in Sources */,
 				2F2E6C532693BA0300968B3A /* Methods.swift in Sources */,

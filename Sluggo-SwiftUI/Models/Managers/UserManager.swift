@@ -41,7 +41,7 @@ class UserManager {
     }
     
     public func doRefresh() async -> Result<RefreshRecord, Error> {
-        let params = ["refresh": identity.refreshToken] as [String: String]
+        let params = ["refresh": identity.refreshToken!] as [String: String]
         guard let body = try? JSONSerialization.data(withJSONObject: params, options: []) else {
             let errorMessage = "Failed to serialize JSON for doRefresh in UserManager"
             return .failure(Exception.runtimeError(message: errorMessage))

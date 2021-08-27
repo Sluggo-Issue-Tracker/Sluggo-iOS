@@ -7,7 +7,7 @@
 
 import Foundation
 
-class AppIdentity: Codable {
+class AppIdentity: Codable, ObservableObject {
 
     private var _authenticatedLogin: LoginRecord?
     private var _team: TeamRecord?
