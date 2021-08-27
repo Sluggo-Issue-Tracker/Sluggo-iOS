@@ -11,27 +11,29 @@ class TeamManager: TeamPaginatedListable {
 
     static let urlBase = "api/teams/"
     private var identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
         self.identity = identity
+        self.requestLoader = requestLoader
     }
 
-    func listFromTeams(page: Int, completionHandler: @escaping (Result<PaginatedList<TeamRecord>, Error>) -> Void) {
+    func listFromTeams(page: Int) async -> Result<PaginatedList<TeamRecord>, Error> {
 
         let urlString = identity.baseAddress + TeamManager.urlBase + "?page=\(page)"
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 
-    public func getTeam(team: TeamRecord, completionHandler: @escaping(Result<TeamRecord, Error>) -> Void) {
+    public func getTeam(team: TeamRecord) async -> Result<TeamRecord, Error> {
         let urlString = identity.baseAddress + TeamManager.urlBase + "\(team.id)/"
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 }

@@ -12,9 +12,11 @@ class MemberManager: TeamPaginatedListable {
 
     static let urlBase = "/members/"
     private var identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
         self.identity = identity
+        self.requestLoader = requestLoader
     }
 
     // swiftlint:disable:next identifier_name
@@ -30,13 +32,11 @@ class MemberManager: TeamPaginatedListable {
         return URL(string: urlString)!
     }
 
-    public func updateMemberRecord(_ memberRecord: MemberRecord,
-                                   completionHandler: @escaping(Result<MemberRecord, Error>) -> Void) {
+    public func updateMemberRecord(_ memberRecord: MemberRecord) async -> Result<MemberRecord, Error> {
 
         guard let body = JsonLoader.encode(object: memberRecord) else {
             let errorMessage = "Failed to serialize member JSON for updateMemberRecord in MemberManager"
-            completionHandler(.failure(Exception.runtimeError(message: errorMessage)))
-            return
+            return .failure(Exception.runtimeError(message: errorMessage))
         }
 
         let requestBuilder = URLRequestBuilder(url: makeDetailUrl(id: memberRecord.id))
@@ -44,22 +44,20 @@ class MemberManager: TeamPaginatedListable {
             .setMethod(method: .PUT)
             .setIdentity(identity: identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
-
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 
-    func listFromTeams(page: Int, completionHandler: @escaping (Result<PaginatedList<MemberRecord>, Error>) -> Void) {
+    func listFromTeams(page: Int) async -> Result<PaginatedList<MemberRecord>, Error> {
 
         let requestBuilder = URLRequestBuilder(url: makeListUrl(page: page))
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 
     public func getMemberRecord(user: AuthRecord,
-                                identity: AppIdentity,
-                                completionHandler: @escaping(Result<MemberRecord, Error>) -> Void) {
+                                identity: AppIdentity) async -> Result<MemberRecord, Error> {
         // MARK: MD5 hashing convenience
         func MD5String(for str: String) -> String {
             let digest = Insecure.MD5.hash(data: str.data(using: .utf8)!)
@@ -76,10 +74,10 @@ class MemberManager: TeamPaginatedListable {
         let memberPk = teamHash.appending(userHash)
 
         // Execute request
-        let request = URLRequestBuilder(url: URL(string: makeDetailUrl(id: memberPk).absoluteString)!)
+        let requestBuilder = URLRequestBuilder(url: URL(string: makeDetailUrl(id: memberPk).absoluteString)!)
             .setMethod(method: .GET)
             .setIdentity(identity: identity)
 
-        JsonLoader.executeCodableRequest(request: request.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
 }
