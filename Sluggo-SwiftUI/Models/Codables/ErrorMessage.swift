@@ -9,4 +9,5 @@ import Foundation
 
 struct ErrorMessage: Codable {
     var detail: String
+    var code: String
 }

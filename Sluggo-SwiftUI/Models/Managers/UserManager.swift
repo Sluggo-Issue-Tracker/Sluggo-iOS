@@ -39,6 +39,20 @@ class UserManager {
 
         return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
     }
+    
+    public func doRefresh() async -> Result<RefreshRecord, Error> {
+        let params = ["refresh": identity.refreshToken] as [String: String]
+        guard let body = try? JSONSerialization.data(withJSONObject: params, options: []) else {
+            let errorMessage = "Failed to serialize JSON for doRefresh in UserManager"
+            return .failure(Exception.runtimeError(message: errorMessage))
+        }
+
+        let requestBuilder = URLRequestBuilder(url: URL(string: identity.baseAddress + UserManager.urlBase + "auth/token/refresh/")!)
+            .setData(data: body)
+            .setMethod(method: .POST)
+
+        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+    }
 
     public func doLogout() async -> Result<LogoutMessage, Error>{
         let url = URL(string: identity.baseAddress + UserManager.urlBase + "logout/")!
