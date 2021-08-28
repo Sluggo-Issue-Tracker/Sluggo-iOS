@@ -45,6 +45,7 @@
 		2F2E6C622693BA0300968B3A /* HasTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C432693BA0200968B3A /* HasTitle.swift */; };
 		2F3614592696842A005B46F8 /* NullCodable in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3614582696842A005B46F8 /* NullCodable */; };
 		2F65235D269AD2DC0022E851 /* JsonLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F65235C269AD2DC0022E851 /* JsonLoaderTests.swift */; };
+		2F8BF67826D9AEBB00B9A221 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F8BF67726D9AEBB00B9A221 /* LoginView.swift */; };
 		2FE1B6BE269EBB0300667E95 /* CanNetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1B6BD269EBB0300667E95 /* CanNetworkRequest.swift */; };
 		2FE1B6C0269EBBE100667E95 /* BaseLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */; };
 /* End PBXBuildFile section */
@@ -107,6 +108,7 @@
 		2F2E6C422693BA0200968B3A /* TeamPaginatedListable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TeamPaginatedListable.swift; sourceTree = "<group>"; };
 		2F2E6C432693BA0200968B3A /* HasTitle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HasTitle.swift; sourceTree = "<group>"; };
 		2F65235C269AD2DC0022E851 /* JsonLoaderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonLoaderTests.swift; sourceTree = "<group>"; };
+		2F8BF67726D9AEBB00B9A221 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		2FE1B6BD269EBB0300667E95 /* CanNetworkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanNetworkRequest.swift; sourceTree = "<group>"; };
 		2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -163,7 +165,6 @@
 				2F8BF67626D9A87000B9A221 /* Views */,
 				2F2E6C212693BA0200968B3A /* Models */,
 				2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */,
-				2F2E6BFB2693B99C00968B3A /* LaunchView.swift */,
 				2F2E6BFD2693B99D00968B3A /* Assets.xcassets */,
 				2F2E6BFF2693B99D00968B3A /* Preview Content */,
 			);
@@ -261,6 +262,8 @@
 		2F8BF67626D9A87000B9A221 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2F2E6BFB2693B99C00968B3A /* LaunchView.swift */,
+				2F8BF67726D9AEBB00B9A221 /* LoginView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -409,6 +412,7 @@
 				2F2E6C452693BA0200968B3A /* TicketRecord.swift in Sources */,
 				2F2E6C4B2693BA0200968B3A /* PaginatedList.swift in Sources */,
 				2F2E6C5E2693BA0300968B3A /* TicketFilterParameters.swift in Sources */,
+				2F8BF67826D9AEBB00B9A221 /* LoginView.swift in Sources */,
 				2F2E6C482693BA0200968B3A /* TagRecord.swift in Sources */,
 				2F2E6C4C2693BA0200968B3A /* LogoutMessage.swift in Sources */,
 				2F2E6C472693BA0200968B3A /* UserRecord.swift in Sources */,

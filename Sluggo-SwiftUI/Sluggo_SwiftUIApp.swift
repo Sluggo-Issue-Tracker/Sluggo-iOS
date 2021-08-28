@@ -13,7 +13,13 @@ struct Sluggo_SwiftUIApp: App {
     var identity: AppIdentity = AppIdentity.loadFromDisk() ?? AppIdentity()
     var body: some Scene {
         WindowGroup {
-            LaunchView()
+            TabView {
+                NavigationView {
+                    LaunchView().navigationTitle("Launch View")
+                }
+                .tabItem { Text("Launch") }
+            }
+            .environmentObject(identity)
         }
     }
 }
