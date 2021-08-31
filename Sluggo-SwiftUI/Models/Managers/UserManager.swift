@@ -26,7 +26,7 @@ class UserManager {
     }
 
     public func doLogin(username: String,
-                        password: String) async -> Result<TokenRecord, Error> {
+                        password: String) async -> Result<LoginRecord, Error> {
         let params = ["username": username, "password": password] as [String: String]
         guard let body = try? JSONSerialization.data(withJSONObject: params, options: []) else {
             let errorMessage = "Failed to serialize JSON for doLogin in UserManager"

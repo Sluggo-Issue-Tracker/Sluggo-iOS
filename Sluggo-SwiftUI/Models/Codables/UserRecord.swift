@@ -32,5 +32,5 @@ struct LoginRecord: Codable {
 }
 
 struct RefreshRecord: Codable {
-    var access: String
+    var refresh: String
 }

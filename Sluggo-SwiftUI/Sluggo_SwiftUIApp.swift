@@ -10,14 +10,13 @@ import SwiftUI
 @main
 struct Sluggo_SwiftUIApp: App {
     
-    var identity: AppIdentity = AppIdentity.loadFromDisk() ?? AppIdentity()
+    @StateObject var identity: AppIdentity = AppIdentity.loadFromDisk() ?? AppIdentity()
+    @State var showingError: Bool = false
+    @State var errorMessage: String = ""
     var body: some Scene {
         WindowGroup {
-            TabView {
-                NavigationView {
-                    LaunchView().navigationTitle("Launch View")
-                }
-                .tabItem { Text("Launch") }
+            Group {
+                LaunchView()
             }
             .environmentObject(identity)
         }
