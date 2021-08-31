@@ -16,6 +16,17 @@ class AppIdentity: Codable, ObservableObject {
     private var persist: Bool = false
 
     // MARK: Computed Properties
+    
+    var authenticatedLogin: LoginRecord? {
+        get {
+            return _authenticatedLogin
+        }
+        set(newUser) {
+            _authenticatedLogin = newUser
+            enqueueSave()
+        }
+    }
+    
     var authenticatedUser: AuthRecord? {
         get {
             return _authenticatedLogin?.user

@@ -12,17 +12,24 @@ struct LaunchView: View {
     @EnvironmentObject var identity: AppIdentity
     
     @State var showLoginModal: Bool = false
+    
     var body: some View {
         Text("Sluggo iOS")
             .padding()
             .task {
                 await didAppear()
             }.sheet(isPresented: $showLoginModal) {
+                Task.init(priority: .background) {
+                    await tryTeam()
+                }
+            } content: {
                 LoginView(showModal: $showLoginModal)
+                    .interactiveDismissDisabled(true)
             }
     }
     
     private func didAppear() async {
+        print(self.identity)
         let remember = (self.identity.token != nil)
         let userManager = UserManager(identity: self.identity)
 
@@ -44,6 +51,7 @@ struct LaunchView: View {
     }
     
     private func tryTeam() async {
+        print("In tryTeam")
         if let team = identity.team {
             let teamManager = TeamManager(identity: self.identity)
             let result = await teamManager.getTeam(team: team)
@@ -67,11 +75,12 @@ struct LaunchView: View {
     }
     
     private func showLogin() {
+        print("In showLogin")
         self.showLoginModal.toggle()
     }
     
     func showTeams() {
-
+        print("In showTeams")
     }
 
     func continueLogin() {
