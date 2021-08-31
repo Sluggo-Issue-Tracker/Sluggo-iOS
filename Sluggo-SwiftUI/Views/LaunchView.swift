@@ -12,6 +12,7 @@ struct LaunchView: View {
     @EnvironmentObject var identity: AppIdentity
     
     @State var showLoginModal: Bool = false
+    @State var showTeamsModal: Bool = false
     
     var body: some View {
         Text("Sluggo iOS")
@@ -24,6 +25,13 @@ struct LaunchView: View {
                 }
             } content: {
                 LoginView(showModal: $showLoginModal)
+                    .interactiveDismissDisabled(true)
+            }.sheet(isPresented: $showTeamsModal) {
+                Task.init(priority: .background) {
+                    await tryTeam()
+                }
+            } content: {
+                TeamsChoiceView(showModal: $showTeamsModal)
                     .interactiveDismissDisabled(true)
             }
     }
@@ -81,9 +89,11 @@ struct LaunchView: View {
     
     func showTeams() {
         print("In showTeams")
+        self.showTeamsModal.toggle()
     }
 
     func continueLogin() {
+        print("In continueLogin")
         
     }
 }
