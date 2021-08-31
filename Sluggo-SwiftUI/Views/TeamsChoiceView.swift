@@ -9,10 +9,15 @@ import SwiftUI
 
 struct TeamsChoiceView: View {
     
+    @EnvironmentObject var identity: AppIdentity
+    
     @Binding var showModal: Bool
     
     var body: some View {
-        Text("Teams View!")
+        NavigationView {
+            Text("Hello, World!")
+                .navigationTitle("Teams")
+        }
     }
 }
 
