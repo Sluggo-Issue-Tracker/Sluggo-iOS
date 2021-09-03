@@ -14,10 +14,10 @@ class PinnedTicketManager {
     private var member: MemberRecord
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, member: MemberRecord, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, member: MemberRecord, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
         self.member = member
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     private func makeListURL() -> URL {
@@ -35,7 +35,7 @@ class PinnedTicketManager {
             .setMethod(method: .GET)
             .setIdentity(identity: identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func postPinnedTicket(ticket: TicketRecord) async -> Result<PinnedTicketRecord, Error> {
@@ -52,7 +52,7 @@ class PinnedTicketManager {
             .setData(data: body)
             .setIdentity(identity: identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func deletePinnedTicket(pinned: PinnedTicketRecord) async -> Result<Void, Error> {
@@ -61,7 +61,7 @@ class PinnedTicketManager {
             .setMethod(method: .DELETE)
             .setIdentity(identity: identity)
 
-        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
     }
 
     public func fetchPinned(ticket: TicketRecord) async -> Result<PinnedTicketRecord, Error> {
@@ -84,6 +84,6 @@ class PinnedTicketManager {
             .setMethod(method: .GET)
             .setIdentity(identity: identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 }

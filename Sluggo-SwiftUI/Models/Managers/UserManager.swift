@@ -12,9 +12,9 @@ class UserManager {
     private var identity: AppIdentity
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     public func getUser() async -> Result<AuthRecord, Error> {
@@ -22,7 +22,7 @@ class UserManager {
             .setMethod(method: .GET)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func doLogin(username: String,
@@ -37,7 +37,7 @@ class UserManager {
             .setData(data: body)
             .setMethod(method: .POST)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func doLogout() async -> Result<LogoutMessage, Error>{
@@ -46,6 +46,6 @@ class UserManager {
             .setMethod(method: .POST)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 }

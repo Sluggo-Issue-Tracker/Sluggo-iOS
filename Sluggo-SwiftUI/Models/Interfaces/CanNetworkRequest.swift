@@ -13,8 +13,8 @@ protocol CanNetworkRequest {
     
     static func encode<T: Codable>(object data: T) -> Data?
     
-    func executeCodableRequest<T: Codable>(request: URLRequest) async -> Result<T, Error>
+    func executeCodableRequest<T: Codable>(request: URLRequestBuilder) async -> Result<T, Error>
     
-    func executeEmptyRequest(request: URLRequest) async -> Result<Void, Error>
+    func executeEmptyRequest(request: URLRequestBuilder) async -> Result<Void, Error>
     
 }
