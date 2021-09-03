@@ -7,7 +7,7 @@
 
 import Foundation
 
-class AppIdentity: Codable {
+class AppIdentity: Codable, ObservableObject {
 
     private var _authenticatedLogin: LoginRecord?
     private var _team: TeamRecord?
@@ -16,6 +16,17 @@ class AppIdentity: Codable {
     private var persist: Bool = false
 
     // MARK: Computed Properties
+    
+    var authenticatedLogin: LoginRecord? {
+        get {
+            return _authenticatedLogin
+        }
+        set(newUser) {
+            _authenticatedLogin = newUser
+            enqueueSave()
+        }
+    }
+    
     var authenticatedUser: AuthRecord? {
         get {
             return _authenticatedLogin?.user

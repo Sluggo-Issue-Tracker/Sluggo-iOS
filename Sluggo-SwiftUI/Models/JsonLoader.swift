@@ -7,7 +7,21 @@
 
 import Foundation
 
-class JsonLoader: BaseLoader, CanNetworkRequest {    
+class JsonLoader: BaseLoader, CanNetworkRequest {
+    
+    private func executeRefresh(identity: AppIdentity) async -> Result<RefreshRecord, Error> {
+        let params = ["refresh": identity.refreshToken!] as [String: String]
+        guard let body = try? JSONSerialization.data(withJSONObject: params, options: []) else {
+            let errorMessage = "Failed to serialize JSON for doRefresh in BaseLoader"
+            return .failure(Exception.runtimeError(message: errorMessage))
+        }
+
+        let requestBuilder = URLRequestBuilder(url: URL(string: identity.baseAddress + UserManager.urlBase + "auth/token/refresh/")!)
+            .setData(data: body)
+            .setMethod(method: .POST)
+
+        return await self.executeCodableRequest(request: requestBuilder.getRequest())
+    }
     
     func executeCodableRequest<T: Codable>(request: URLRequest) async -> Result<T, Error> {
 
@@ -25,6 +39,7 @@ class JsonLoader: BaseLoader, CanNetworkRequest {
             } else {
                 let fetchedString = String(data: data, encoding: .utf8) ?? "A parsing error occurred"
                 let errorMessage = "HTTP Error \(resp.statusCode): \(fetchedString)"
+                print(errorMessage)
                 return .failure(RESTException.failedRequest(message: errorMessage))
             }
         }
