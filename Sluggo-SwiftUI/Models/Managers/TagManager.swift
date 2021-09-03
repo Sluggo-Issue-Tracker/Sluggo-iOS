@@ -13,9 +13,9 @@ class TagManager: TeamPaginatedListable {
     private var identity: AppIdentity
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     private func makeDetailUrl(tagRecord: TagRecord) -> URL {
@@ -35,7 +35,7 @@ class TagManager: TeamPaginatedListable {
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func makeTag(tag: WriteTagRecord) async -> Result<TagRecord, Error> {
@@ -49,7 +49,7 @@ class TagManager: TeamPaginatedListable {
             .setData(data: body)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func deleteTag(tag: TagRecord) async -> Result<Void, Error> {
@@ -58,7 +58,7 @@ class TagManager: TeamPaginatedListable {
             .setMethod(method: .DELETE)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
     }
 
 }

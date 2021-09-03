@@ -12,9 +12,9 @@ class TicketManager {
     private var identity: AppIdentity
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     private func makeDetailUrl(_ ticketRecord: TicketRecord) -> URL {
@@ -43,7 +43,7 @@ class TicketManager {
             .setMethod(method: .GET)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func makeTicket(ticket: WriteTicketRecord) async -> Result<TicketRecord, Error> {
@@ -59,7 +59,7 @@ class TicketManager {
             .setData(data: body)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func updateTicket(ticket: TicketRecord) async -> Result<TicketRecord, Error> {
@@ -81,7 +81,7 @@ class TicketManager {
             .setData(data: body)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
 
     }
     public func deleteTicket(ticket: TicketRecord) async -> Result<Void, Error> {
@@ -91,7 +91,7 @@ class TicketManager {
             .setIdentity(identity: self.identity)
 
         
-        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
 
     }
 }

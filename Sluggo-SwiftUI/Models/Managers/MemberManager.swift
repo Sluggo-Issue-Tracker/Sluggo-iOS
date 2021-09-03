@@ -14,9 +14,9 @@ class MemberManager: TeamPaginatedListable {
     private var identity: AppIdentity
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     // swiftlint:disable:next identifier_name
@@ -44,7 +44,7 @@ class MemberManager: TeamPaginatedListable {
             .setMethod(method: .PUT)
             .setIdentity(identity: identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     func listFromTeams(page: Int) async -> Result<PaginatedList<MemberRecord>, Error> {
@@ -53,7 +53,7 @@ class MemberManager: TeamPaginatedListable {
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func getMemberRecord(user: AuthRecord,
@@ -78,6 +78,6 @@ class MemberManager: TeamPaginatedListable {
             .setMethod(method: .GET)
             .setIdentity(identity: identity)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 }

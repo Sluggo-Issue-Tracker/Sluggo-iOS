@@ -13,9 +13,9 @@ class StatusManager: TeamPaginatedListable {
     private let identity: AppIdentity
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     private func makeDetailUrl(statusRecord: StatusRecord) -> URL {
@@ -35,6 +35,6 @@ class StatusManager: TeamPaginatedListable {
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 }

@@ -14,9 +14,9 @@ class InviteManager {
     private var identity: AppIdentity
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     func getUserInvites() async -> Result<[UserInviteRecord], Error> {
@@ -26,7 +26,7 @@ class InviteManager {
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func acceptUserInvite(invite: UserInviteRecord) async -> Result<Void, Error> {
@@ -36,7 +36,7 @@ class InviteManager {
             .setMethod(method: .PUT)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
 
     }
 
@@ -47,7 +47,7 @@ class InviteManager {
             .setMethod(method: .DELETE)
             .setIdentity(identity: self.identity)
 
-        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
 
     }
 }
@@ -59,9 +59,9 @@ class TeamInviteManager: TeamPaginatedListable {
     private var identity: AppIdentity
     private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity, requestLoader: CanNetworkRequest = JsonLoader()) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
-        self.requestLoader = requestLoader
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     func listFromTeams(page: Int) async -> Result<PaginatedList<TeamInviteRecord>, Error> {
@@ -71,7 +71,7 @@ class TeamInviteManager: TeamPaginatedListable {
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        return await requestLoader.executeCodableRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     func addTeamInvite(invite: WriteTeamInviteRecord) async -> Result<Void, Error> {
@@ -88,7 +88,7 @@ class TeamInviteManager: TeamPaginatedListable {
             .setData(data: body)
             .setMethod(method: .POST)
 
-        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
     }
 
     func deleteTeamInvite(invite: TeamInviteRecord) async -> Result<Void, Error> {
@@ -99,6 +99,6 @@ class TeamInviteManager: TeamPaginatedListable {
             .setIdentity(identity: identity)
             .setMethod(method: .DELETE)
 
-        return await requestLoader.executeEmptyRequest(request: requestBuilder.getRequest())
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
     }
 }
