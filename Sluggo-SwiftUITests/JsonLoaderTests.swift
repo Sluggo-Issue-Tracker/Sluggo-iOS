@@ -9,8 +9,9 @@ import XCTest
 @testable import Sluggo_SwiftUI
 
 class MockJsonLoader: BaseLoader, CanNetworkRequest {
-    func executeCodableRequest<T: Codable>(request: URLRequest) async -> Result<T, Error> {
-        let path = request.url
+    func executeCodableRequest<T: Codable>(request: URLRequestBuilder) async -> Result<T, Error> {
+        let urlRequest = request.getRequest()
+        let path = urlRequest.url
         let ticket = TicketRecord(id: 1,
                                   ticketNumber: 1,
                                   tagList: [],
@@ -52,7 +53,7 @@ class MockJsonLoader: BaseLoader, CanNetworkRequest {
         return .failure(RESTException.failedRequest(message: "Not an ticket, tag, or status url"))
     }
     
-    func executeEmptyRequest(request: URLRequest) async -> Result<Void, Error> {
+    func executeEmptyRequest(request: URLRequestBuilder) async -> Result<Void, Error> {
         return .success(())
     }
 }

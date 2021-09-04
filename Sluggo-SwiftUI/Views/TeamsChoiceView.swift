@@ -15,8 +15,17 @@ struct TeamsChoiceView: View {
     
     var body: some View {
         NavigationView {
-            Text("Hello, World!")
-                .navigationTitle("Teams")
+            List() {
+                
+            }
+            .navigationTitle("Teams")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Invites") {
+                        print("Invites tapped!")
+                    }
+                }
+            }
         }
     }
 }
