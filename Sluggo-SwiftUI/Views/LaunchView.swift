@@ -37,7 +37,6 @@ struct LaunchView: View {
     }
     
     private func didAppear() async {
-        print(self.identity)
         let remember = (self.identity.token != nil)
         let userManager = UserManager(identity: self.identity)
 
@@ -46,7 +45,7 @@ struct LaunchView: View {
             switch loginResult {
                 case .success( _):
                     // Need to also check for invalid saved team
-                    await self.tryTeam()
+                    await self.showLogin()
                 case .failure(let error):
                     print(error)
                     DispatchQueue.main.sync {
