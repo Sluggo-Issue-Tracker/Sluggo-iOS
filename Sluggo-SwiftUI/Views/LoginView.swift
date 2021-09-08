@@ -80,7 +80,7 @@ struct LoginView: View {
         Task.init(priority: .userInitiated) {
             self.identity.baseAddress = instanceURL
             self.identity.setPersistData(persist: isPersistance)
-            await self.attemptLogin(username: username, password: password)
+            await self.performLogin(username: username, password: password)
         }
     }
     
@@ -94,7 +94,7 @@ struct LoginView: View {
     }
     
     @MainActor
-    private func attemptLogin(username: String, password: String) async {
+    private func performLogin(username: String, password: String) async {
         let userManager = UserManager(identity: identity)
         
         let result = await userManager.doLogin(username: username, password: password)
