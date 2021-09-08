@@ -10,6 +10,9 @@ import SwiftUI
 struct TeamsChoiceView: View {
     
     @EnvironmentObject var identity: AppIdentity
+    @StateObject var alertContext = AlertContext()
+    
+    
     @State var teamsList: [TeamRecord] = [];
     
     @Binding var showModal: Bool
@@ -31,6 +34,7 @@ struct TeamsChoiceView: View {
         .task {
             await didAppear()
         }
+        .alert(context: alertContext)
     }
     
     private func didAppear() async {
@@ -42,6 +46,7 @@ struct TeamsChoiceView: View {
                 teamsList = teams
             case .failure(let error):
                 print(error)
+                alertContext.presentError(error: error)
         }
     }
 }

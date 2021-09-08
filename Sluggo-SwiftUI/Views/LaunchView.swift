@@ -45,7 +45,7 @@ struct LaunchView: View {
             switch loginResult {
                 case .success( _):
                     // Need to also check for invalid saved team
-                    await self.showLogin()
+                    await self.tryTeam()
                 case .failure(let error):
                     print(error)
                     DispatchQueue.main.sync {
