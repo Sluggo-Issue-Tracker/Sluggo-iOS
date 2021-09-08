@@ -9,12 +9,12 @@ import Foundation
 import NullCodable
 
 // swiftlint:disable identifier_name
-struct UserInviteRecord: Codable {
+struct UserInviteRecord: Codable, Identifiable {
     var id: Int
     var team: TeamRecord
 }
 
-struct TeamInviteRecord: Codable {
+struct TeamInviteRecord: Codable, Identifiable {
     var id: Int
     var userEmail: String
     var team: TeamRecord
