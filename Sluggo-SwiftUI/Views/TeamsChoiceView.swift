@@ -10,13 +10,14 @@ import SwiftUI
 struct TeamsChoiceView: View {
     
     @EnvironmentObject var identity: AppIdentity
+    @State var teamsList: [TeamRecord] = [];
     
     @Binding var showModal: Bool
     
     var body: some View {
         NavigationView {
-            List() {
-                
+            List(teamsList) { team in
+                Text(team.name)
             }
             .navigationTitle("Teams")
             .toolbar {
@@ -26,6 +27,21 @@ struct TeamsChoiceView: View {
                     }
                 }
             }
+        }
+        .task {
+            await didAppear()
+        }
+    }
+    
+    private func didAppear() async {
+        let userManager = UserManager(identity: self.identity)
+        let teamsResult = await userManager.getTeamsForUser()
+        switch teamsResult {
+            case .success(let teams):
+                // Need to also check for invalid saved team
+                teamsList = teams
+            case .failure(let error):
+                print(error)
         }
     }
 }

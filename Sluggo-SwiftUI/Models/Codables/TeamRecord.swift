@@ -9,7 +9,7 @@ import Foundation
 import NullCodable
 
 // swiftlint:disable identifier_name
-struct TeamRecord: Codable, Equatable {
+struct TeamRecord: Codable, Equatable, Identifiable {
     var id: Int
     var name: String
     var objectUuid: UUID

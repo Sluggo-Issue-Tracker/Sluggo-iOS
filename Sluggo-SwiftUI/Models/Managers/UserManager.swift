@@ -24,6 +24,14 @@ class UserManager {
 
         return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
+    
+    public func getTeamsForUser() async -> Result<[TeamRecord], Error> {
+        let requestBuilder = URLRequestBuilder(url: URL(string: identity.baseAddress + "api/user/teams/")!)
+            .setMethod(method: .GET)
+            .setIdentity(identity: self.identity)
+        
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
+    }
 
     public func doLogin(username: String,
                         password: String) async -> Result<LoginRecord, Error> {
