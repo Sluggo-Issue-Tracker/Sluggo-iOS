@@ -10,10 +10,12 @@ import Foundation
 class TagManager: TeamPaginatedListable {
 
     static let urlBase = "/tags/"
-    private let identity: AppIdentity
+    private var identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     private func makeDetailUrl(tagRecord: TagRecord) -> URL {
@@ -28,20 +30,18 @@ class TagManager: TeamPaginatedListable {
         return URL(string: urlString)!
     }
 
-    func listFromTeams(page: Int, completionHandler: @escaping (Result<PaginatedList<TagRecord>, Error>) -> Void) {
+    func listFromTeams(page: Int) async -> Result<PaginatedList<TagRecord>, Error> {
         let requestBuilder = URLRequestBuilder(url: makeListUrl(page: page))
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
-    public func makeTag(tag: WriteTagRecord,
-                        completionHandler: @escaping(Result<TagRecord, Error>) -> Void) {
-        guard let body = JsonLoader.encode(object: tag) else {
+    public func makeTag(tag: WriteTagRecord) async -> Result<TagRecord, Error> {
+        guard let body = BaseLoader.encode(object: tag) else {
             let errorMessage = "Failed to serialize tag JSON for makeTag in TagManager"
-            completionHandler(.failure(Exception.runtimeError(message: errorMessage)))
-            return
+            return .failure(Exception.runtimeError(message: errorMessage))
         }
 
         let requestBuilder = URLRequestBuilder(url: makeListUrl(page: 1))
@@ -49,16 +49,16 @@ class TagManager: TeamPaginatedListable {
             .setData(data: body)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
-    public func deleteTag(tag: TagRecord, completionHandler: @escaping(Result<Void, Error>) -> Void) {
+    public func deleteTag(tag: TagRecord) async -> Result<Void, Error> {
 
         let requestBuilder = URLRequestBuilder(url: makeDetailUrl(tagRecord: tag))
             .setMethod(method: .DELETE)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeEmptyRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
     }
 
 }

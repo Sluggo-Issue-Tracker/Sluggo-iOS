@@ -10,41 +10,42 @@ import Foundation
 class UserManager {
     static let urlBase = "auth/"
     private var identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
-    public func getUser(completitonHandler: @escaping(Result<AuthRecord, Error>) -> Void) {
+    public func getUser() async -> Result<AuthRecord, Error> {
         let requestBuilder = URLRequestBuilder(url: URL(string: identity.baseAddress + "auth/user/")!)
             .setMethod(method: .GET)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completitonHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
     public func doLogin(username: String,
-                        password: String, completionHandler: @escaping(Result<TokenRecord, Error>) -> Void) {
+                        password: String) async -> Result<LoginRecord, Error> {
         let params = ["username": username, "password": password] as [String: String]
         guard let body = try? JSONSerialization.data(withJSONObject: params, options: []) else {
-            completionHandler(.failure(Exception.runtimeError(message:
-                                                                "Failed to serialize JSON for doLogin in UserManager")))
-            return
+            let errorMessage = "Failed to serialize JSON for doLogin in UserManager"
+            return .failure(Exception.runtimeError(message: errorMessage))
         }
 
         let requestBuilder = URLRequestBuilder(url: URL(string: identity.baseAddress + UserManager.urlBase + "login/")!)
             .setData(data: body)
             .setMethod(method: .POST)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
-    public func doLogout(completionHandler: @escaping(Result<LogoutMessage, Error>) -> Void) {
+    public func doLogout() async -> Result<LogoutMessage, Error>{
         let url = URL(string: identity.baseAddress + UserManager.urlBase + "logout/")!
         let requestBuilder = URLRequestBuilder(url: url)
             .setMethod(method: .POST)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 }

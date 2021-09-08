@@ -12,40 +12,42 @@ class InviteManager {
 
     static let urlBase = "api/users/invites/"
     private var identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
-    func getUserInvites(completionHandler: @escaping (Result<[UserInviteRecord], Error>) -> Void) {
+    func getUserInvites() async -> Result<[UserInviteRecord], Error> {
 
         let urlString = identity.baseAddress + InviteManager.urlBase
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
-    public func acceptUserInvite(invite: UserInviteRecord, completionHandler: @escaping(Result<Void, Error>) -> Void) {
+    public func acceptUserInvite(invite: UserInviteRecord) async -> Result<Void, Error> {
 
         let urlString = identity.baseAddress + InviteManager.urlBase + "\(invite.id)/"
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
             .setMethod(method: .PUT)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeEmptyRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
 
     }
 
-    public func rejectUserInvite(invite: UserInviteRecord, completionHandler: @escaping(Result<Void, Error>) -> Void) {
+    public func rejectUserInvite(invite: UserInviteRecord) async -> Result<Void, Error> {
 
         let urlString = identity.baseAddress + InviteManager.urlBase + "\(invite.id)/"
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
             .setMethod(method: .DELETE)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeEmptyRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
 
     }
 }
@@ -55,30 +57,30 @@ class TeamInviteManager: TeamPaginatedListable {
 
     static let urlBase = "api/users/invites/"
     private var identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
-    func listFromTeams(page: Int, completionHandler: @escaping
-                        (Result<PaginatedList<TeamInviteRecord>, Error>) -> Void) {
+    func listFromTeams(page: Int) async -> Result<PaginatedList<TeamInviteRecord>, Error> {
 
         let urlString = identity.baseAddress + TeamManager.urlBase + "\(identity.team!.id)/" + "invites/"
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
-    func addTeamInvite(invite: WriteTeamInviteRecord, completionHandler: @escaping(Result<Void, Error>) -> Void) {
+    func addTeamInvite(invite: WriteTeamInviteRecord) async -> Result<Void, Error> {
 
         let urlString = identity.baseAddress + TeamManager.urlBase + "\(identity.team!.id)/" + "invites/"
 
         guard let body = JsonLoader.encode(object: invite) else {
             let errorMessage = "Failed to serialize ticket JSON for addTeamInvite in InviteManager"
-            completionHandler(.failure(Exception.runtimeError(message: errorMessage)))
-            return
+            return .failure(Exception.runtimeError(message: errorMessage))
         }
 
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
@@ -86,10 +88,10 @@ class TeamInviteManager: TeamPaginatedListable {
             .setData(data: body)
             .setMethod(method: .POST)
 
-        JsonLoader.executeEmptyRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
     }
 
-    func deleteTeamInvite(invite: TeamInviteRecord, completionHandler: @escaping(Result<Void, Error>) -> Void) {
+    func deleteTeamInvite(invite: TeamInviteRecord) async -> Result<Void, Error> {
 
         let urlString = identity.baseAddress + TeamManager.urlBase +
             "\(identity.team!.id)/" + "invites/" + "\(invite.id)/"
@@ -97,6 +99,6 @@ class TeamInviteManager: TeamPaginatedListable {
             .setIdentity(identity: identity)
             .setMethod(method: .DELETE)
 
-        JsonLoader.executeEmptyRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
     }
 }

@@ -8,12 +8,14 @@
 import Foundation
 
 class StatusManager: TeamPaginatedListable {
-
+    
     static let urlBase = "/statuses/"
     private let identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     private func makeDetailUrl(statusRecord: StatusRecord) -> URL {
@@ -28,11 +30,11 @@ class StatusManager: TeamPaginatedListable {
         return URL(string: urlString)!
     }
 
-    func listFromTeams(page: Int, completionHandler: @escaping (Result<PaginatedList<StatusRecord>, Error>) -> Void) {
+    func listFromTeams(page: Int) async -> Result<PaginatedList<StatusRecord>, Error>{
         let requestBuilder = URLRequestBuilder(url: makeListUrl(page: page))
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 }

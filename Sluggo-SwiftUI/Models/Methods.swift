@@ -35,9 +35,9 @@ class UnwindState<M: TeamPaginatedListable> {
 }
 
 func unwindPaginationRecurse<M: TeamPaginatedListable>(state: UnwindState<M>) {
-
-    state.manager.listFromTeams(page: state.page) { (result: Result<PaginatedList<M.Record>, Error>) -> Void in
-
+    // marks task as Async
+    Task.init(priority: .background) {
+        let result = await state.manager.listFromTeams(page: state.page)
         switch result {
         case .success(let record):
             state.maxCount = record.count
@@ -61,6 +61,7 @@ func unwindPaginationRecurse<M: TeamPaginatedListable>(state: UnwindState<M>) {
             state.after?()
         }
     }
+
 }
 
 func unwindPagination<M: TeamPaginatedListable>(manager: M,

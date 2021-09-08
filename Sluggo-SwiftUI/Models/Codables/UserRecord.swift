@@ -24,3 +24,13 @@ struct AuthRecord: Codable {
     @NullCodable var lastName: String?
     var username: String
 }
+
+struct LoginRecord: Codable {
+    var accessToken: String?
+    var refreshToken: String?
+    var user: AuthRecord?
+}
+
+struct RefreshRecord: Codable {
+    var access: String
+}

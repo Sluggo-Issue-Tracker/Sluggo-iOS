@@ -36,7 +36,6 @@
 		2F2E6C582693BA0300968B3A /* PinnedTicketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C382693BA0200968B3A /* PinnedTicketManager.swift */; };
 		2F2E6C592693BA0300968B3A /* InviteManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C392693BA0200968B3A /* InviteManager.swift */; };
 		2F2E6C5A2693BA0300968B3A /* StatusManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3A2693BA0200968B3A /* StatusManager.swift */; };
-		2F2E6C5B2693BA0300968B3A /* BaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3B2693BA0200968B3A /* BaseManager.swift */; };
 		2F2E6C5C2693BA0300968B3A /* MemberManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3C2693BA0200968B3A /* MemberManager.swift */; };
 		2F2E6C5D2693BA0300968B3A /* TeamManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3D2693BA0200968B3A /* TeamManager.swift */; };
 		2F2E6C5E2693BA0300968B3A /* TicketFilterParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C3E2693BA0200968B3A /* TicketFilterParameters.swift */; };
@@ -44,6 +43,10 @@
 		2F2E6C602693BA0300968B3A /* AppIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C402693BA0200968B3A /* AppIdentity.swift */; };
 		2F2E6C612693BA0300968B3A /* TeamPaginatedListable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C422693BA0200968B3A /* TeamPaginatedListable.swift */; };
 		2F2E6C622693BA0300968B3A /* HasTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C432693BA0200968B3A /* HasTitle.swift */; };
+		2F3614592696842A005B46F8 /* NullCodable in Frameworks */ = {isa = PBXBuildFile; productRef = 2F3614582696842A005B46F8 /* NullCodable */; };
+		2F65235D269AD2DC0022E851 /* JsonLoaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F65235C269AD2DC0022E851 /* JsonLoaderTests.swift */; };
+		2FE1B6BE269EBB0300667E95 /* CanNetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1B6BD269EBB0300667E95 /* CanNetworkRequest.swift */; };
+		2FE1B6C0269EBBE100667E95 /* BaseLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,7 +99,6 @@
 		2F2E6C382693BA0200968B3A /* PinnedTicketManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PinnedTicketManager.swift; sourceTree = "<group>"; };
 		2F2E6C392693BA0200968B3A /* InviteManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteManager.swift; sourceTree = "<group>"; };
 		2F2E6C3A2693BA0200968B3A /* StatusManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusManager.swift; sourceTree = "<group>"; };
-		2F2E6C3B2693BA0200968B3A /* BaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseManager.swift; sourceTree = "<group>"; };
 		2F2E6C3C2693BA0200968B3A /* MemberManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemberManager.swift; sourceTree = "<group>"; };
 		2F2E6C3D2693BA0200968B3A /* TeamManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TeamManager.swift; sourceTree = "<group>"; };
 		2F2E6C3E2693BA0200968B3A /* TicketFilterParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TicketFilterParameters.swift; sourceTree = "<group>"; };
@@ -104,6 +106,9 @@
 		2F2E6C402693BA0200968B3A /* AppIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppIdentity.swift; sourceTree = "<group>"; };
 		2F2E6C422693BA0200968B3A /* TeamPaginatedListable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TeamPaginatedListable.swift; sourceTree = "<group>"; };
 		2F2E6C432693BA0200968B3A /* HasTitle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HasTitle.swift; sourceTree = "<group>"; };
+		2F65235C269AD2DC0022E851 /* JsonLoaderTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonLoaderTests.swift; sourceTree = "<group>"; };
+		2FE1B6BD269EBB0300667E95 /* CanNetworkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanNetworkRequest.swift; sourceTree = "<group>"; };
+		2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,6 +116,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F3614592696842A005B46F8 /* NullCodable in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,6 +181,7 @@
 			isa = PBXGroup;
 			children = (
 				2F2E6C0A2693B99E00968B3A /* Sluggo_SwiftUITests.swift */,
+				2F65235C269AD2DC0022E851 /* JsonLoaderTests.swift */,
 			);
 			path = "Sluggo-SwiftUITests";
 			sourceTree = "<group>";
@@ -233,7 +240,6 @@
 				2F2E6C382693BA0200968B3A /* PinnedTicketManager.swift */,
 				2F2E6C392693BA0200968B3A /* InviteManager.swift */,
 				2F2E6C3A2693BA0200968B3A /* StatusManager.swift */,
-				2F2E6C3B2693BA0200968B3A /* BaseManager.swift */,
 				2F2E6C3C2693BA0200968B3A /* MemberManager.swift */,
 				2F2E6C3D2693BA0200968B3A /* TeamManager.swift */,
 			);
@@ -245,6 +251,8 @@
 			children = (
 				2F2E6C422693BA0200968B3A /* TeamPaginatedListable.swift */,
 				2F2E6C432693BA0200968B3A /* HasTitle.swift */,
+				2FE1B6BD269EBB0300667E95 /* CanNetworkRequest.swift */,
+				2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */,
 			);
 			path = Interfaces;
 			sourceTree = "<group>";
@@ -265,6 +273,9 @@
 			dependencies = (
 			);
 			name = "Sluggo-SwiftUI";
+			packageProductDependencies = (
+				2F3614582696842A005B46F8 /* NullCodable */,
+			);
 			productName = "Sluggo-SwiftUI";
 			productReference = 2F2E6BF62693B99C00968B3A /* Sluggo-SwiftUI.app */;
 			productType = "com.apple.product-type.application";
@@ -337,6 +348,9 @@
 				Base,
 			);
 			mainGroup = 2F2E6BED2693B99C00968B3A;
+			packageReferences = (
+				2F3614572696842A005B46F8 /* XCRemoteSwiftPackageReference "NullCodable" */,
+			);
 			productRefGroup = 2F2E6BF72693B99C00968B3A /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -385,12 +399,12 @@
 				2F2E6C4D2693BA0200968B3A /* StatusRecord.swift in Sources */,
 				2F2E6C5A2693BA0300968B3A /* StatusManager.swift in Sources */,
 				2F2E6C452693BA0200968B3A /* TicketRecord.swift in Sources */,
-				2F2E6C5B2693BA0300968B3A /* BaseManager.swift in Sources */,
 				2F2E6C4B2693BA0200968B3A /* PaginatedList.swift in Sources */,
 				2F2E6C5E2693BA0300968B3A /* TicketFilterParameters.swift in Sources */,
 				2F2E6C482693BA0200968B3A /* TagRecord.swift in Sources */,
 				2F2E6C4C2693BA0200968B3A /* LogoutMessage.swift in Sources */,
 				2F2E6C472693BA0200968B3A /* UserRecord.swift in Sources */,
+				2FE1B6BE269EBB0300667E95 /* CanNetworkRequest.swift in Sources */,
 				2F2E6C582693BA0300968B3A /* PinnedTicketManager.swift in Sources */,
 				2F2E6C592693BA0300968B3A /* InviteManager.swift in Sources */,
 				2F2E6C4E2693BA0200968B3A /* ErrorMessage.swift in Sources */,
@@ -406,6 +420,7 @@
 				2F2E6C562693BA0300968B3A /* TagManager.swift in Sources */,
 				2F2E6C5C2693BA0300968B3A /* MemberManager.swift in Sources */,
 				2F2E6C512693BA0300968B3A /* JsonLoader.swift in Sources */,
+				2FE1B6C0269EBBE100667E95 /* BaseLoader.swift in Sources */,
 				2F2E6C612693BA0300968B3A /* TeamPaginatedListable.swift in Sources */,
 				2F2E6C462693BA0200968B3A /* MemberRecord.swift in Sources */,
 				2F2E6BFA2693B99C00968B3A /* Sluggo_SwiftUIApp.swift in Sources */,
@@ -419,6 +434,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F65235D269AD2DC0022E851 /* JsonLoaderTests.swift in Sources */,
 				2F2E6C0B2693B99E00968B3A /* Sluggo_SwiftUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -579,7 +595,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -609,7 +625,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -632,7 +648,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JKXM8C9H4L;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -657,7 +673,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JKXM8C9H4L;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -759,6 +775,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2F3614572696842A005B46F8 /* XCRemoteSwiftPackageReference "NullCodable" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/g-mark/NullCodable";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2F3614582696842A005B46F8 /* NullCodable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2F3614572696842A005B46F8 /* XCRemoteSwiftPackageReference "NullCodable" */;
+			productName = NullCodable;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2F2E6BEE2693B99C00968B3A /* Project object */;
 }

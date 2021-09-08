@@ -7,22 +7,32 @@
 
 import Foundation
 
-class AppIdentity: Codable {
+class AppIdentity: Codable, ObservableObject {
 
-    private var _authenticatedUser: AuthRecord?
+    private var _authenticatedLogin: LoginRecord?
     private var _team: TeamRecord?
-    private var _token: String?
     private var _pageSize = 10
     private var _baseAddress: String = Constants.Config.URL_BASE
     private var persist: Bool = false
 
     // MARK: Computed Properties
-    var authenticatedUser: AuthRecord? {
+    
+    var authenticatedLogin: LoginRecord? {
         get {
-            return _authenticatedUser
+            return _authenticatedLogin
         }
         set(newUser) {
-            _authenticatedUser = newUser
+            _authenticatedLogin = newUser
+            enqueueSave()
+        }
+    }
+    
+    var authenticatedUser: AuthRecord? {
+        get {
+            return _authenticatedLogin?.user
+        }
+        set(newUser) {
+            _authenticatedLogin?.user = newUser
             enqueueSave()
         }
     }
@@ -37,10 +47,19 @@ class AppIdentity: Codable {
     }
     var token: String? {
         get {
-            return _token
+            return _authenticatedLogin?.accessToken
         }
         set (newToken) {
-            _token = newToken
+            _authenticatedLogin?.accessToken = newToken
+            enqueueSave()
+        }
+    }
+    var refreshToken: String? {
+        get {
+            return _authenticatedLogin?.refreshToken
+        }
+        set (newToken) {
+            _authenticatedLogin?.refreshToken = newToken
             enqueueSave()
         }
     }
@@ -97,7 +116,7 @@ class AppIdentity: Codable {
             return nil
         }
 
-        let appIdentity: AppIdentity? = JsonLoader.decode(data: persistenceFileData)
+        let appIdentity: AppIdentity? = BaseLoader.decode(data: persistenceFileData)
         if appIdentity == nil {
             // File exists, but failed to deserialize, so clean it up
             _ = deletePersistenceFile()
@@ -107,7 +126,7 @@ class AppIdentity: Codable {
     }
 
     func saveToDisk() -> Bool {
-        guard let appIdentityData = JsonLoader.encode(object: self) else {
+        guard let appIdentityData = BaseLoader.encode(object: self) else {
             print("Failed to encode app identity with JSON, could not persist")
             return false
         }
@@ -118,7 +137,7 @@ class AppIdentity: Codable {
         }
 
         do {
-            try appIdentityContents.write(to: AppIdentity.persistencePath, atomically: true, encoding: .utf8)
+            try appIdentityContents.write(to: AppIdentity.persistencePath, atomically: true, encoding: String.Encoding.utf8)
             return true
         } catch {
             print("Could not write persistence file to disk, could not persist")

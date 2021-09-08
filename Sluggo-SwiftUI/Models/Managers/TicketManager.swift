@@ -10,9 +10,11 @@ import Foundation
 class TicketManager {
     static let urlBase = "/tickets/"
     private var identity: AppIdentity
+    private let requestLoader: CanNetworkRequest
 
-    init(_ identity: AppIdentity) {
+    init(identity: AppIdentity, requestLoader: CanNetworkRequest? = nil) {
         self.identity = identity
+        self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
     private func makeDetailUrl(_ ticketRecord: TicketRecord) -> URL {
@@ -36,22 +38,18 @@ class TicketManager {
         return makeListUrl(page: page, queryParams: queryParams)
     }
 
-    public func listTeamTickets(page: Int,
-                                queryParams: TicketFilterParameters,
-                                completionHandler: @escaping (Result<PaginatedList<TicketRecord>, Error>) -> Void) {
+    public func listTeamTickets(page: Int, queryParams: TicketFilterParameters) async -> Result<PaginatedList<TicketRecord>, Error>  {
         let requestBuilder = URLRequestBuilder(url: makeListUrl(page: page, queryParams: queryParams))
             .setMethod(method: .GET)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
-    public func makeTicket(ticket: WriteTicketRecord,
-                           completionHandler: @escaping(Result<TicketRecord, Error>) -> Void) {
-        guard let body = JsonLoader.encode(object: ticket) else {
+    public func makeTicket(ticket: WriteTicketRecord) async -> Result<TicketRecord, Error> {
+        guard let body = BaseLoader.encode(object: ticket) else {
             let errorMessage = "Failed to serialize ticket JSON for makeTicket in TicketManager"
-            completionHandler(.failure(Exception.runtimeError(message: errorMessage)))
-            return
+            return .failure(Exception.runtimeError(message: errorMessage))
         }
 
         // NOTE: this works but the page here does effectively nothing. I think for clarity introducing a separate
@@ -61,10 +59,10 @@ class TicketManager {
             .setData(data: body)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
     }
 
-    public func updateTicket(ticket: TicketRecord, completionHandler: @escaping(Result<TicketRecord, Error>) -> Void) {
+    public func updateTicket(ticket: TicketRecord) async -> Result<TicketRecord, Error> {
         let tagsList: [Int] = ticket.tagList.map {$0.id}
 
         let writeTicket = WriteTicketRecord(tagList: tagsList,
@@ -73,10 +71,9 @@ class TicketManager {
                                             title: ticket.title,
                                             description: ticket.description,
                                             dueDate: ticket.dueDate)
-        guard let body = JsonLoader.encode(object: writeTicket) else {
+        guard let body = BaseLoader.encode(object: writeTicket) else {
             let errorMessage = "Failed to serialize ticket JSON for updateTicket in TicketManager"
-            completionHandler(.failure(Exception.runtimeError(message: errorMessage)))
-            return
+            return .failure(Exception.runtimeError(message: errorMessage))
         }
 
         let requestBuilder = URLRequestBuilder(url: makeDetailUrl(ticket))
@@ -84,16 +81,17 @@ class TicketManager {
             .setData(data: body)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeCodableRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        return await requestLoader.executeCodableRequest(request: requestBuilder)
 
     }
-    public func deleteTicket(ticket: TicketRecord, completionHandler: @escaping(Result<Void, Error>) -> Void) {
+    public func deleteTicket(ticket: TicketRecord) async -> Result<Void, Error> {
 
         let requestBuilder = URLRequestBuilder(url: makeDetailUrl(ticket))
             .setMethod(method: .DELETE)
             .setIdentity(identity: self.identity)
 
-        JsonLoader.executeEmptyRequest(request: requestBuilder.getRequest(), completionHandler: completionHandler)
+        
+        return await requestLoader.executeEmptyRequest(request: requestBuilder)
 
     }
 }

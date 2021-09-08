@@ -9,5 +9,5 @@ import Foundation
 
 protocol TeamPaginatedListable {
     associatedtype Record where Record: Codable
-    func listFromTeams(page: Int, completionHandler: @escaping(Result<PaginatedList<Record>, Error>) -> Void)
+    func listFromTeams(page: Int) async -> Result<PaginatedList<Record>, Error>
 }
