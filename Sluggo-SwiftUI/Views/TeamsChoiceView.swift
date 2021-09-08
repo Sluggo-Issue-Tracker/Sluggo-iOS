@@ -34,6 +34,9 @@ struct TeamsChoiceView: View {
         .task {
             await didAppear()
         }
+        .refreshable {
+            await didAppear()
+        }
         .alert(context: alertContext)
     }
     
