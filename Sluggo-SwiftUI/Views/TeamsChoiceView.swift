@@ -13,7 +13,7 @@ struct TeamsChoiceView: View {
     @StateObject var alertContext = AlertContext()
     
     
-    @State var teamsList: [TeamRecord] = [];
+    @State var teamsList: [TeamRecord] = []
     
     @Binding var showModal: Bool
     
@@ -24,6 +24,13 @@ struct TeamsChoiceView: View {
             }
             .navigationTitle("Teams")
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Back") {
+                        Task.init(priority: .userInitiated) {
+                            await self.performLogout()
+                        }
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Invites") {
                         print("Invites tapped!")
@@ -38,6 +45,21 @@ struct TeamsChoiceView: View {
             await didAppear()
         }
         .alert(context: alertContext)
+    }
+    
+    private func performLogout() async {
+        let userManager = UserManager(identity: identity)
+        
+        let result = await userManager.doLogout()
+        
+        switch result {
+            case .success( _):
+                // Set identity to null
+                print("Logout!")
+                self.showModal.toggle()
+            case .failure(let error):
+                alertContext.presentError(error: error)
+        }
     }
     
     private func didAppear() async {

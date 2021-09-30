@@ -20,20 +20,18 @@ struct LaunchView: View {
             .task {
                 await didAppear()
             }.sheet(isPresented: $showLoginModal) {
-                Task.init(priority: .background) {
-                    await tryTeam()
-                }
-            } content: {
-                LoginView(showModal: $showLoginModal)
-                    .interactiveDismissDisabled(true)
-            }.sheet(isPresented: $showTeamsModal) {
-                Task.init(priority: .background) {
-                    await tryTeam()
-                }
-            } content: {
-                TeamsChoiceView(showModal: $showTeamsModal)
-                    .interactiveDismissDisabled(true)
-            }
+                } content: {
+                    LoginView(showModal: $showLoginModal)
+                        .interactiveDismissDisabled(true)
+//            }.sheet(isPresented: $showTeamsModal) {
+//                Task.init(priority: .background) {
+//                    await tryTeam()
+//                }
+//            } content: {
+//                TeamsChoiceView(showModal: $showTeamsModal)
+//                    .interactiveDismissDisabled(true)
+//            }
+        }
     }
     
     private func didAppear() async {
@@ -42,10 +40,11 @@ struct LaunchView: View {
 
         if remember {
             let loginResult = await userManager.getUser()
+            
             switch loginResult {
                 case .success( _):
-                    // Need to also check for invalid saved team
-                    await self.tryTeam()
+                    await tryTeam()
+                
                 case .failure(let error):
                     print(error)
                     DispatchQueue.main.sync {
@@ -61,8 +60,8 @@ struct LaunchView: View {
         print("In tryTeam")
         if let team = identity.team {
             let teamManager = TeamManager(identity: self.identity)
-            let result = await teamManager.getTeam(team: team)
-            switch result {
+            let teamResult = await teamManager.getTeam(team: team)
+            switch teamResult {
             case .success(let teamRecord):
                 self.identity.team = teamRecord
                 DispatchQueue.main.sync {
@@ -71,12 +70,12 @@ struct LaunchView: View {
             case .failure(let error):
                 print(error)
                 DispatchQueue.main.sync {
-                    self.showTeams()
+                    self.showLogin()
                 }
             }
         } else {
             DispatchQueue.main.sync {
-                self.showTeams()
+                self.showLogin()
             }
         }
     }
@@ -84,11 +83,6 @@ struct LaunchView: View {
     private func showLogin() {
         print("In showLogin")
         self.showLoginModal.toggle()
-    }
-    
-    func showTeams() {
-        print("In showTeams")
-        self.showTeamsModal.toggle()
     }
 
     func continueLogin() {

@@ -19,6 +19,7 @@ struct LoginView: View {
     @State var password: String = ""
     @State var instanceURL: String = ""
     @State var isPersistance: Bool = false
+    @State var showTeamsModal: Bool = false
     
     
     var body: some View {
@@ -58,7 +59,11 @@ struct LoginView: View {
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
             }
-            
+            .sheet(isPresented: $showTeamsModal) {
+                } content: {
+                    TeamsChoiceView(showModal: $showTeamsModal)
+                        .interactiveDismissDisabled(true)
+                }
             
         }
         .alert(context: alertContext)
@@ -103,10 +108,14 @@ struct LoginView: View {
         case .success(let record):
             // Save to identity
             self.identity.authenticatedLogin = record
-            self.showModal.toggle()
+            self.showTeams()
         case .failure(let error):
             alertContext.presentError(error: error)
         }
+    }
+    func showTeams() {
+        print("In showTeams")
+        self.showTeamsModal.toggle()
     }
 }
 
