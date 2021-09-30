@@ -14,6 +14,7 @@ struct LoginView: View {
     @StateObject var alertContext = AlertContext()
     
     @Binding var showModal: Bool
+    @State var showTeamsModal: Bool = false
     
     @State var username: String = ""
     @State var password: String = ""
@@ -22,46 +23,52 @@ struct LoginView: View {
     
     
     var body: some View {
-        Form {
-            IconSluggo()
-                .padding()
-            
-            Text("Login Page")
-                .padding()
-                .font(.largeTitle)
-            
-            LoginTextField(placeholder: "Username",
-                           textValue: $username,
-                           textStyle: .username)
-                .padding()
-            
-            LoginTextField(placeholder: "Password",
-                           textValue: $password,
-                           textStyle: .password,
-                           isSecure: true)
-                .padding()
-            
-            LoginTextField(placeholder: "Sluggo Instance URL",
-                           textValue: $instanceURL,
-                           textStyle: .URL)
-                .padding()
-            
-            HStack() {
-                CheckBox(checked: $isPersistance, caption: "Remember Me?")
+        NavigationView {
+            List {
+                IconSluggo()
                     .padding()
                 
-                Spacer()
+                Text("Login Page")
+                    .padding()
+                    .font(.largeTitle)
                 
-                Button("Login") {
-                    self.attemptLogin()
+                LoginTextField(placeholder: "Username",
+                               textValue: $username,
+                               textStyle: .username)
+                    .padding()
+                
+                LoginTextField(placeholder: "Password",
+                               textValue: $password,
+                               textStyle: .password,
+                               isSecure: true)
+                    .padding()
+                
+                LoginTextField(placeholder: "Sluggo Instance URL",
+                               textValue: $instanceURL,
+                               textStyle: .URL)
+                    .padding()
+                
+                HStack() {
+                    CheckBox(checked: $isPersistance, caption: "Remember Me?")
+                        .padding()
+                    
+                    Spacer()
+                    
+                    Button("Login") {
+                        self.attemptLogin()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
                 }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+                
+                NavigationLink(destination: TeamsChoiceView(showModal: .constant(true)), isActive: $showTeamsModal) { EmptyView() }.hidden()
             }
-            
+            .alert(context: alertContext)
+            .navigationBarHidden(true)
+
             
         }
-        .alert(context: alertContext)
+        
     }
     
     private func attemptLogin() {
@@ -103,7 +110,25 @@ struct LoginView: View {
         case .success(let record):
             // Save to identity
             self.identity.authenticatedLogin = record
-            self.showModal.toggle()
+            print("In login:tryTeam")
+            if let team = identity.team {
+                let teamManager = TeamManager(identity: self.identity)
+                let result = await teamManager.getTeam(team: team)
+                switch result {
+                case .success(let teamRecord):
+                    self.identity.team = teamRecord
+                    DispatchQueue.main.sync {
+                        self.showModal.toggle()
+                    }
+                case .failure(let error):
+                    print(error)
+                    DispatchQueue.main.sync {
+                        self.showTeamsModal.toggle()
+                    }
+                }
+            } else {
+                self.showTeamsModal.toggle()
+            }
         case .failure(let error):
             alertContext.presentError(error: error)
         }

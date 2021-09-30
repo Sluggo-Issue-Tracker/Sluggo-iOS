@@ -18,16 +18,14 @@ struct TeamsChoiceView: View {
     @Binding var showModal: Bool
     
     var body: some View {
-        NavigationView {
-            List(teamsList) { team in
-                Text(team.name)
-            }
-            .navigationTitle("Teams")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Invites") {
-                        print("Invites tapped!")
-                    }
+        List(teamsList) { team in
+            Text(team.name)
+        }
+        .navigationTitle("Teams")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Invites") {
+                    print("Invites tapped!")
                 }
             }
         }

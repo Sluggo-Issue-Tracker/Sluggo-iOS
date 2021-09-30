@@ -10,6 +10,7 @@ import SwiftUI
 struct LaunchView: View {
     
     @EnvironmentObject var identity: AppIdentity
+    @Binding var showLaunch: Bool
     
     @State var showLoginModal: Bool = false
     @State var showTeamsModal: Bool = false
@@ -26,14 +27,15 @@ struct LaunchView: View {
             } content: {
                 LoginView(showModal: $showLoginModal)
                     .interactiveDismissDisabled(true)
-            }.sheet(isPresented: $showTeamsModal) {
-                Task.init(priority: .background) {
-                    await tryTeam()
-                }
-            } content: {
-                TeamsChoiceView(showModal: $showTeamsModal)
-                    .interactiveDismissDisabled(true)
             }
+//            .sheet(isPresented: $showTeamsModal) {
+//                Task.init(priority: .background) {
+//                    await tryTeam()
+//                }
+//            } content: {
+//                TeamsChoiceView(showModal: $showTeamsModal)
+//                    .interactiveDismissDisabled(true)
+//            }
     }
     
     private func didAppear() async {
@@ -93,12 +95,12 @@ struct LaunchView: View {
 
     func continueLogin() {
         print("In continueLogin")
-        
+        self.showLaunch = false
     }
 }
 
 struct LaunchView_Previews: PreviewProvider {
     static var previews: some View {
-        LaunchView()
+        LaunchView(showLaunch: .constant(true))
     }
 }
