@@ -84,7 +84,6 @@ class AppIdentity: Codable, ObservableObject {
 
     private static var persistencePath: URL {
         let path = URL(fileURLWithPath: NSHomeDirectory().appending("/Library/appdata.json"))
-        print(path)
         return path
     }
 
@@ -103,6 +102,11 @@ class AppIdentity: Codable, ObservableObject {
                 _ = self.saveToDisk()
             }
         }
+    }
+    
+    public func clear() {
+        self._authenticatedLogin = nil
+        self._team = nil
     }
 
     static func loadFromDisk() -> AppIdentity? {
@@ -147,6 +151,7 @@ class AppIdentity: Codable, ObservableObject {
 
     static func deletePersistenceFile() -> Bool {
         // Succeed if the persistence file doesn't exist. This allows us to clean up a bad file.
+        print("in delete")
         if !(FileManager.default.fileExists(atPath: self.persistencePath.path)) {
             print("Attempted to delete persistence file when it doesn't exist, returning")
             return true
@@ -154,6 +159,7 @@ class AppIdentity: Codable, ObservableObject {
 
         do {
             try FileManager.default.removeItem(at: self.persistencePath)
+            print("Cleaned up persistance item")
             return true
         } catch {
             print("FAILED TO CLEAN UP PERSISTENCE FILE")

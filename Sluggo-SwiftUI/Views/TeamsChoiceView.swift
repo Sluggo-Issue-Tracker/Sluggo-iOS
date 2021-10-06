@@ -10,16 +10,20 @@ import SwiftUI
 struct TeamsChoiceView: View {
     
     @EnvironmentObject var identity: AppIdentity
+    @Environment(\.presentationMode) var presentationMode
     @StateObject var alertContext = AlertContext()
     
+    @Binding var showLogin: Bool
     
-    @State var teamsList: [TeamRecord] = [];
-    
-    @Binding var showModal: Bool
+    @State var teamsList: [TeamRecord] = []
     
     var body: some View {
         List(teamsList) { team in
-            Text(team.name)
+            Button(team.name) {
+                self.identity.team = team
+                self.showLogin.toggle()
+            }
+            .buttonStyle(PlainButtonStyle())
         }
         .navigationTitle("Teams")
         .toolbar {
@@ -54,6 +58,6 @@ struct TeamsChoiceView: View {
 
 struct TeamsChoiceView_Previews: PreviewProvider {
     static var previews: some View {
-        TeamsChoiceView(showModal: .constant(true))
+        TeamsChoiceView(showLogin: .constant(true))
     }
 }

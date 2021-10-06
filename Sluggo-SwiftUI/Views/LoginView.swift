@@ -14,7 +14,7 @@ struct LoginView: View {
     @StateObject var alertContext = AlertContext()
     
     @Binding var showModal: Bool
-    @State var showTeamsModal: Bool = false
+    @State var showTeamsModal = false
     
     @State var username: String = ""
     @State var password: String = ""
@@ -61,14 +61,36 @@ struct LoginView: View {
                     .controlSize(.large)
                 }
                 
-                NavigationLink(destination: TeamsChoiceView(showModal: .constant(true)), isActive: $showTeamsModal) { EmptyView() }.hidden()
+                NavigationLink(destination: TeamsChoiceView(showLogin: $showModal), isActive: $showTeamsModal) {
+                    EmptyView()
+                }
+                .hidden()
+                .onChange(of: self.showTeamsModal, perform: closeTeams)
             }
             .alert(context: alertContext)
             .navigationBarHidden(true)
-
+            
             
         }
-        
+    }
+    
+    private func closeTeams(isShowing: Bool) -> Void {
+        if !isShowing && self.identity.team == nil {
+            let userManager = UserManager(identity: identity)
+            Task.init(priority: .background) {
+                let result = await userManager.doLogout()
+                
+                switch result {
+                case .success( _):
+                    // Set identity to null
+                    print("Logout!")
+                    self.identity.setPersistData(persist: false)
+                    self.identity.clear()
+                case .failure(let error):
+                    alertContext.presentError(error: error)
+                }
+            }
+        }
     }
     
     private func attemptLogin() {
@@ -85,8 +107,8 @@ struct LoginView: View {
         }
         
         Task.init(priority: .userInitiated) {
-            self.identity.baseAddress = instanceURL
             self.identity.setPersistData(persist: isPersistance)
+            self.identity.baseAddress = instanceURL
             await self.performLogin(username: username, password: password)
         }
     }
@@ -110,23 +132,7 @@ struct LoginView: View {
         case .success(let record):
             // Save to identity
             self.identity.authenticatedLogin = record
-            print("In login:tryTeam")
-            if let team = identity.team {
-                let teamManager = TeamManager(identity: self.identity)
-                let result = await teamManager.getTeam(team: team)
-                switch result {
-                case .success(let teamRecord):
-                    self.identity.team = teamRecord
-                    DispatchQueue.main.sync {
-                        self.showModal.toggle()
-                    }
-                case .failure(let error):
-                    print(error)
-                    DispatchQueue.main.sync {
-                        self.showTeamsModal.toggle()
-                    }
-                }
-            } else {
+            if identity.team == nil {
                 self.showTeamsModal.toggle()
             }
         case .failure(let error):

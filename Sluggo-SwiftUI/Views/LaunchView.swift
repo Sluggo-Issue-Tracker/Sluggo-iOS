@@ -13,7 +13,6 @@ struct LaunchView: View {
     @Binding var showLaunch: Bool
     
     @State var showLoginModal: Bool = false
-    @State var showTeamsModal: Bool = false
     
     var body: some View {
         Text("Sluggo iOS")
@@ -28,14 +27,6 @@ struct LaunchView: View {
                 LoginView(showModal: $showLoginModal)
                     .interactiveDismissDisabled(true)
             }
-//            .sheet(isPresented: $showTeamsModal) {
-//                Task.init(priority: .background) {
-//                    await tryTeam()
-//                }
-//            } content: {
-//                TeamsChoiceView(showModal: $showTeamsModal)
-//                    .interactiveDismissDisabled(true)
-//            }
     }
     
     private func didAppear() async {
@@ -73,12 +64,12 @@ struct LaunchView: View {
             case .failure(let error):
                 print(error)
                 DispatchQueue.main.sync {
-                    self.showTeams()
+                    self.showLogin()
                 }
             }
         } else {
             DispatchQueue.main.sync {
-                self.showTeams()
+                self.showLogin()
             }
         }
     }
@@ -86,11 +77,6 @@ struct LaunchView: View {
     private func showLogin() {
         print("In showLogin")
         self.showLoginModal.toggle()
-    }
-    
-    func showTeams() {
-        print("In showTeams")
-        self.showTeamsModal.toggle()
     }
 
     func continueLogin() {
