@@ -10,7 +10,6 @@ import SwiftUI
 struct TeamsChoiceView: View {
     
     @EnvironmentObject var identity: AppIdentity
-    @Environment(\.presentationMode) var presentationMode
     @StateObject var alertContext = AlertContext()
     
     @Binding var showLogin: Bool
