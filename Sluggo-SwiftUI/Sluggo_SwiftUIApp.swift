@@ -16,14 +16,21 @@ struct Sluggo_SwiftUIApp: App {
     @State var errorMessage: String = ""
     var body: some Scene {
         WindowGroup {
-            Group {
-                if !isLoggedIn {
-                    LaunchView(showLaunch: $isLoggedIn)
-                } else {
-                    HomeView()
-                }
-            }
+            ContainerView()
             .environmentObject(identity)
+        }
+    }
+}
+
+struct ContainerView: View {
+    @EnvironmentObject var identity: AppIdentity
+    
+    var body: some View {
+        if identity.team == nil {
+            LaunchView()
+        }
+        else {
+            HomeView()
         }
     }
 }

@@ -9,11 +9,13 @@ import Foundation
 
 class AppIdentity: Codable, ObservableObject {
 
-    private var _authenticatedLogin: LoginRecord?
-    private var _team: TeamRecord?
-    private var _pageSize = 10
-    private var _baseAddress: String = Constants.Config.URL_BASE
-    private var persist: Bool = false
+    @Published private var _authenticatedLogin: LoginRecord?
+    @Published private var _team: TeamRecord?
+    @Published private var _pageSize = 10
+    @Published private var _baseAddress: String = Constants.Config.URL_BASE
+    @Published private var persist: Bool = false
+    
+    
 
     // MARK: Computed Properties
     
@@ -165,5 +167,41 @@ class AppIdentity: Codable, ObservableObject {
             print("FAILED TO CLEAN UP PERSISTENCE FILE")
             return false
         }
+    }
+    
+    enum CodingKeys: CodingKey {
+        case authenticatedLogin
+        case authenticatedUser
+        case team
+        case token
+        case refreshToken
+        case pageSize
+        case baseAddress
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        authenticatedLogin = try container.decode(LoginRecord.self, forKey: .authenticatedLogin)
+        authenticatedUser = try container.decode(AuthRecord.self, forKey: .authenticatedUser)
+        team = try container.decode(TeamRecord.self, forKey: .team)
+        token = try container.decode(String.self, forKey: .token)
+        refreshToken = try container.decode(String.self, forKey: .refreshToken)
+        pageSize = try container.decode(Int.self, forKey: .pageSize)
+        baseAddress = try container.decode(String.self, forKey: .baseAddress)
+    }
+    
+    required init() {
+        
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(authenticatedLogin, forKey: .authenticatedLogin)
+        try container.encode(authenticatedUser, forKey: .authenticatedUser)
+        try container.encode(team, forKey: .team)
+        try container.encode(token, forKey: .token)
+        try container.encode(refreshToken, forKey: .refreshToken)
+        try container.encode(pageSize, forKey: .pageSize)
+        try container.encode(baseAddress, forKey: .baseAddress)
     }
 }

@@ -10,7 +10,6 @@ import SwiftUI
 struct LaunchView: View {
     
     @EnvironmentObject var identity: AppIdentity
-    @Binding var showLaunch: Bool
     
     @State var showLoginModal: Bool = false
     
@@ -57,9 +56,9 @@ struct LaunchView: View {
             let result = await teamManager.getTeam(team: team)
             switch result {
             case .success(let teamRecord):
-                self.identity.team = teamRecord
                 DispatchQueue.main.sync {
-                    self.continueLogin()
+                    
+                    self.identity.team = teamRecord
                 }
             case .failure(let error):
                 print(error)
@@ -78,15 +77,10 @@ struct LaunchView: View {
         print("In showLogin")
         self.showLoginModal.toggle()
     }
-
-    func continueLogin() {
-        print("In continueLogin")
-        self.showLaunch = false
-    }
 }
 
 struct LaunchView_Previews: PreviewProvider {
     static var previews: some View {
-        LaunchView(showLaunch: .constant(true))
+        LaunchView()
     }
 }
