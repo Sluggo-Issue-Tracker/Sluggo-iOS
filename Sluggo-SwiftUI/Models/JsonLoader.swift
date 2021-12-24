@@ -80,8 +80,10 @@ class JsonLoader: BaseLoader, CanNetworkRequest {
                 return .failure(RESTException.failedRequest(message: errorMessage))
             }
         }
-        catch {
-            return .failure(Exception.runtimeError(message: "Server Error!"))
+        catch let error as NSError {
+            return .failure(Exception.runtimeError(message: "\(error.localizedDescription)"))
+        } catch {
+            return .failure(Exception.runtimeError(message: "Server Error"))
         }
     }
 
