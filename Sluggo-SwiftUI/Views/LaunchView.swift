@@ -56,10 +56,10 @@ struct LaunchView: View {
             let result = await teamManager.getTeam(team: team)
             switch result {
             case .success(let teamRecord):
-                DispatchQueue.main.sync {
+                
                     
                     self.identity.team = teamRecord
-                }
+                
             case .failure(let error):
                 print(error)
                 DispatchQueue.main.sync {

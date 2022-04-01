@@ -22,7 +22,7 @@ struct TeamsChoiceView: View {
                 self.identity.team = team
                 self.showLogin.toggle()
             }
-            .buttonStyle(PlainButtonStyle())
+            //.buttonStyle(PlainButtonStyle())
         }
         .navigationTitle("Teams")
         .toolbar {

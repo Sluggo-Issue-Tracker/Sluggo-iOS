@@ -9,14 +9,12 @@ import SwiftUI
 
 struct TicketListView: View {
     
-    let tickets: [TicketRecord] = [
-        TicketRecord(id: 1, ticketNumber: 1, tagList: [], objectUuid: UUID(), title: "Fix The Robot", description: "This is a robot", created: Date()),
-        TicketRecord(id: 2, ticketNumber: 2, tagList: [], objectUuid: UUID(), title: "Develop Network Protocol", description: "This is a robot", created: Date()),
-        TicketRecord(id: 3, ticketNumber: 3, tagList: [], objectUuid: UUID(), title: "Update Firmware", description: "This is a robot", created: Date()),
-        TicketRecord(id: 4, ticketNumber: 4, tagList: [], objectUuid: UUID(), title: "Update The API", description: "This is a robot", created: Date()),
-        TicketRecord(id: 5, ticketNumber: 5, tagList: [], objectUuid: UUID(), title: "Rewrite the API Code", description: "This is a robot", created: Date())
-        
-    ]
+    @EnvironmentObject var identity: AppIdentity
+    @StateObject var alertContext = AlertContext()
+    
+    @State var ticketsList: [TicketRecord] = []
+    var filterParams: TicketFilterParameters = TicketFilterParameters()
+    
     @State private var searchKey = ""
     var body: some View {
         NavigationView {
@@ -33,14 +31,39 @@ struct TicketListView: View {
             }
             .searchable(text: $searchKey)
             .navigationTitle("Tickets")
+            .task {
+                await handleTicketsList(page: 1)
+            }
+            .refreshable {
+                await handleTicketsList(page: 1)
+            }
         }
     }
     
     var searchedTickets: [TicketRecord] {
         if searchKey.isEmpty {
-            return tickets
+            return ticketsList
         } else {
-            return tickets.filter { $0.title.contains(searchKey) }
+            return ticketsList.filter { $0.title.contains(searchKey) }
+        }
+    }
+    
+    private func handleTicketsList(page: Int) async {
+        let ticketManager = TicketManager(identity: self.identity)
+        let ticketsResult = await ticketManager.listTeamTickets(page: page, queryParams: self.filterParams)
+        switch ticketsResult {
+            case .success(let tickets):
+                // Need to also check for invalid saved team
+                var ticketsListCopy = Array(self.ticketsList)
+            
+                for entry in tickets.results {
+                    ticketsListCopy.append(entry)
+                
+                }
+                ticketsList = ticketsListCopy
+            case .failure(let error):
+                print(error)
+                alertContext.presentError(error: error)
         }
     }
 }

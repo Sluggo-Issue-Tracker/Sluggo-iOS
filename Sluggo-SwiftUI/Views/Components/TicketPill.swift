@@ -44,10 +44,12 @@ struct TicketPill: View {
             VStack(alignment: .leading, spacing: 5) {
                 Text("\(ticket.ticketNumber) | \(ticket.title)")
                     .font(.headline)
-                    .foregroundColor(.primary)
-                Text("Andrew")
+                    .foregroundColor(Color(.white))
+                
+                Text("\(ticket.assignedUser?.getTitle() ?? "")")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Color(.white))
+                 
             }
             Spacer()
             Image(systemName: "chevron.right")
