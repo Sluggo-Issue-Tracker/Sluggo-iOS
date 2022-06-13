@@ -11,9 +11,6 @@ import SwiftUI
 struct Sluggo_SwiftUIApp: App {
     
     @StateObject var identity: AppIdentity = AppIdentity.loadFromDisk() ?? AppIdentity()
-    @State var isLoggedIn: Bool = false
-    @State var showingError: Bool = false
-    @State var errorMessage: String = ""
     var body: some Scene {
         WindowGroup {
             ContainerView()

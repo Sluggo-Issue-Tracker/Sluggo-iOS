@@ -9,7 +9,7 @@
 import Foundation
 import NullCodable
 // swiftlint:disable identifier_name
-struct TicketRecord: Codable, Identifiable {
+struct TicketRecord: Codable, Identifiable, Equatable {
     var id: Int
     var ticketNumber: Int
     var tagList: [TagRecord]
@@ -23,7 +23,11 @@ struct TicketRecord: Codable, Identifiable {
     var created: Date
     @NullCodable var activated: Date?
     @NullCodable var deactivated: Date?
-
+    
+    static func == (lhs: TicketRecord, rhs: TicketRecord) -> Bool {
+        return lhs.objectUuid == rhs.objectUuid
+    }
+    
 }
 
 struct WriteTicketRecord: Codable {

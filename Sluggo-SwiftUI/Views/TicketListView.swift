@@ -18,17 +18,23 @@ struct TicketListView: View {
     @State private var searchKey = ""
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVStack(alignment: .leading) {
-                    ForEach(searchedTickets, id: \.id) { ticket in
+            List {
+                ForEach(searchedTickets, id: \.id) { ticket in
+                    ZStack {
                         NavigationLink(destination: Text("HI")) {
-                            TicketPill(ticket: ticket)
-                                .padding(.horizontal, 5)
+                            EmptyView()
                         }
+                        .opacity(0.0)
                         .buttonStyle(.plain)
+                        TicketPill(ticket: ticket)
                     }
                 }
+                .listRowSeparator(.hidden)
+                .listRowInsets(.none)
+                .listRowBackground(Color.clear)
+                
             }
+            .listStyle(.plain)
             .searchable(text: $searchKey)
             .navigationTitle("Tickets")
             .task {
@@ -38,6 +44,8 @@ struct TicketListView: View {
                 await handleTicketsList(page: 1)
             }
         }
+        .navigationViewStyle(.stack)
+        .alert(context: alertContext)
     }
     
     var searchedTickets: [TicketRecord] {
@@ -52,18 +60,20 @@ struct TicketListView: View {
         let ticketManager = TicketManager(identity: self.identity)
         let ticketsResult = await ticketManager.listTeamTickets(page: page, queryParams: self.filterParams)
         switch ticketsResult {
-            case .success(let tickets):
-                // Need to also check for invalid saved team
-                var ticketsListCopy = Array(self.ticketsList)
+        case .success(let tickets):
+            // Need to also check for invalid saved team
+            var ticketsListCopy = Array(self.ticketsList)
             
-                for entry in tickets.results {
+            for entry in tickets.results {
+                if !ticketsList.contains(entry) {
                     ticketsListCopy.append(entry)
-                
                 }
-                ticketsList = ticketsListCopy
-            case .failure(let error):
-                print(error)
-                alertContext.presentError(error: error)
+                
+            }
+            ticketsList = ticketsListCopy
+        case .failure(let error):
+            print(error)
+            alertContext.presentError(error: error)
         }
     }
 }
