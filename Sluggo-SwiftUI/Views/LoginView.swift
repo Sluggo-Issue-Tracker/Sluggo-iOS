@@ -83,7 +83,7 @@ struct LoginView: View {
                 switch result {
                 case .success( _):
                     // Set identity to null
-                    print("Logout!")
+                    track("Logout!")
                     self.identity.setPersistData(persist: false)
                     self.identity.clear()
                 case .failure(let error):

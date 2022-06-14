@@ -14,30 +14,31 @@ struct TicketListView: View {
     
     @State var ticketsList: [TicketRecord] = []
     var filterParams: TicketFilterParameters = TicketFilterParameters()
+    @State var isLoading = false
+    @State var page = 1
     
     @State private var searchKey = ""
     var body: some View {
         NavigationView {
             ScrollView {
-                LazyVStack(alignment: .leading) {
+                LazyVStack{
                     ForEach(searchedTickets, id: \.id) { ticket in
                         NavigationLink(destination: Text("HI")) {
                             TicketPill(ticket: ticket)
                                 .padding(.horizontal, 5)
+                                .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
             .searchable(text: $searchKey)
             .navigationTitle("Tickets")
             .task {
-                await handleTicketsList(page: 1)
-            }
-            .refreshable {
-                await handleTicketsList(page: 1)
+                await loadMore()
             }
         }
+
+        .navigationViewStyle(StackNavigationViewStyle())
     }
     
     var searchedTickets: [TicketRecord] {
@@ -47,14 +48,32 @@ struct TicketListView: View {
             return ticketsList.filter { $0.title.contains(searchKey) }
         }
     }
+    private func loadMore() async {
+        //guard !isLoading else { return }
+        let ticketManager = TicketManager(identity: self.identity)
+        let ticketsResult = await ticketManager.listTeamTickets(page: page, queryParams: self.filterParams)
+        switch ticketsResult {
+            case .success(let tickets):
+                var ticketsListCopy = [TicketRecord]()
+            
+                for entry in tickets.results {
+                    ticketsListCopy.append(entry)
+                }
+                
+                ticketsList = ticketsListCopy
+            case .failure(let error):
+                print(error)
+                alertContext.presentError(error: error)
+        }
+        
+    }
     
     private func handleTicketsList(page: Int) async {
         let ticketManager = TicketManager(identity: self.identity)
         let ticketsResult = await ticketManager.listTeamTickets(page: page, queryParams: self.filterParams)
         switch ticketsResult {
             case .success(let tickets):
-                // Need to also check for invalid saved team
-                var ticketsListCopy = Array(self.ticketsList)
+                var ticketsListCopy = [TicketRecord]()
             
                 for entry in tickets.results {
                     ticketsListCopy.append(entry)

@@ -40,19 +40,19 @@ extension Color {
 struct TicketPill: View {
     @State var ticket: TicketRecord
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 5) {
+        HStack{
+            VStack(alignment: .leading) {
                 Text("\(ticket.ticketNumber) | \(ticket.title)")
                     .font(.headline)
-                    .foregroundColor(Color(.white))
+                    .foregroundColor(Color.white)
                 
                 Text("\(ticket.assignedUser?.getTitle() ?? "")")
                     .font(.subheadline)
-                    .foregroundColor(Color(.white))
-                 
+                    .foregroundColor(Color.white)
             }
             Spacer()
             Image(systemName: "chevron.right")
+                .foregroundColor(Color.white)
         }
         .padding()
         .background(Color(hex: ticket.status?.color) ?? Color(#colorLiteral(red: 0.3333333433, green: 0.3333333433, blue: 0.3333333433, alpha: 1)))
