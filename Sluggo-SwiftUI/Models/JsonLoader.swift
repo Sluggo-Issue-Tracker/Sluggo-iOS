@@ -33,7 +33,7 @@ class JsonLoader: BaseLoader, CanNetworkRequest {
     /// and recall the codable request to solve the issue of tokens.
     private func checkRefresh<T>(response: HTTPURLResponse, data: Data, request: URLRequestBuilder, completion: ((URLRequestBuilder) async -> Result<T, Error>)) async -> Result<T, Error>{
         guard let record: ErrorMessage = Self.decode(data: data) else {
-            print(String(data: data, encoding: .utf8) ?? "Failed to print returned values")
+            track(String(data: data, encoding: .utf8) ?? "Failed to print returned values")
             let errorMessage = "Failure to decode retrieved error in JsonLoader Codable Request"
             return .failure(RESTException.failedRequest(message: errorMessage))
         }
@@ -65,7 +65,7 @@ class JsonLoader: BaseLoader, CanNetworkRequest {
             let resp = response as! HTTPURLResponse
             if resp.statusCode <= 299 && resp.statusCode >= 200 {
                 guard let record: T = Self.decode(data: data) else {
-                    print(String(data: data, encoding: .utf8) ?? "Failed to print returned values")
+                    track(String(data: data, encoding: .utf8) ?? "Failed to print returned values")
                     let errorMessage = "Failure to decode retrieved model in JsonLoader Codable Request"
                     return .failure(RESTException.failedRequest(message: errorMessage))
                 }

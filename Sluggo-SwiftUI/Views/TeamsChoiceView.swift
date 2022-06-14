@@ -28,7 +28,7 @@ struct TeamsChoiceView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Invites") {
-                    print("Invites tapped!")
+                    track("Invites tapped!")
                 }
             }
         }

@@ -50,7 +50,7 @@ struct LaunchView: View {
     }
     
     private func tryTeam() async {
-        print("In tryTeam")
+        track("In tryTeam")
         if let team = identity.team {
             let teamManager = TeamManager(identity: self.identity)
             let result = await teamManager.getTeam(team: team)
@@ -74,7 +74,7 @@ struct LaunchView: View {
     }
     
     private func showLogin() {
-        print("In showLogin")
+        track("In showLogin")
         self.showLoginModal.toggle()
     }
 }

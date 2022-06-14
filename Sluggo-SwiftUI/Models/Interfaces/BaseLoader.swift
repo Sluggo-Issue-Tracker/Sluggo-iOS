@@ -19,13 +19,13 @@ class BaseLoader {
         do {
             decodedValue = try decoder.decode(T.self, from: data)
         } catch DecodingError.dataCorrupted(let context) {
-            print("\(context.codingPath) . \(context.debugDescription)")
+            track("\(context.codingPath) . \(context.debugDescription)")
         } catch let context {
             switch context {
             case DecodingError.dataCorrupted(let value):
-                print(value.debugDescription)
+                track(value.debugDescription)
             default:
-                print(context.localizedDescription)
+                track(context.localizedDescription)
 
             }
         }
@@ -41,7 +41,7 @@ class BaseLoader {
 
         // Attempt encoding
         guard let jsonData = try? encoder.encode(data) else {
-            print("Failed to encode object into JSON data.")
+            track("Failed to encode object into JSON data.")
             return nil
 
         }

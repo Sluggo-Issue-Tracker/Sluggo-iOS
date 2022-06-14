@@ -56,7 +56,7 @@ func unwindPaginationRecurse<M: TeamPaginatedListable>(state: UnwindState<M>) {
                 state.after?()
             }
         case .failure(let error):
-            print("error occured")
+            track("error occured")
             state.onFailure?(error)
             state.after?()
         }

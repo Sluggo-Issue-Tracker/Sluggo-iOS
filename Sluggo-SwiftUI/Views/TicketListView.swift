@@ -10,76 +10,144 @@ import SwiftUI
 struct TicketListView: View {
     
     @EnvironmentObject var identity: AppIdentity
-    @StateObject var alertContext = AlertContext()
+    @StateObject private var alertContext = AlertContext()
+    @StateObject private var viewModel = ViewModel()
     
-    @State var ticketsList: [TicketRecord] = []
-    var filterParams: TicketFilterParameters = TicketFilterParameters()
-    
-    @State private var searchKey = ""
     var body: some View {
         NavigationView {
-            List {
-                ForEach(searchedTickets, id: \.id) { ticket in
-                    ZStack {
-                        NavigationLink(destination: Text("HI")) {
-                            EmptyView()
-                        }
-                        .opacity(0.0)
-                        .buttonStyle(.plain)
-                        TicketPill(ticket: ticket)
+            TicketList(tickets: viewModel.searchedTickets)
+                .searchable(text: $viewModel.searchKey)
+                .navigationTitle("Tickets")
+                .task {
+                    viewModel.setup(identity: identity, alertContext: alertContext)
+                    await viewModel.handleTicketsList(page: 1)
+                }
+                .refreshable {
+                    await viewModel.handleTicketsList(page: 1)
+                }
+                .toolbar {
+                    Menu {
+                        Button {} label: {Label("Create New", systemImage: "plus")}
+                        Button {viewModel.showFilter = true} label: {Label("Filter", systemImage: "folder")}
+                    } label: {
+                        Image(systemName: "ellipsis")
                     }
                 }
-                .listRowSeparator(.hidden)
-                .listRowInsets(.none)
-                .listRowBackground(Color.clear)
-                
-            }
-            .listStyle(.plain)
-            .searchable(text: $searchKey)
-            .navigationTitle("Tickets")
-            .task {
-                await handleTicketsList(page: 1)
-            }
-            .refreshable {
-                await handleTicketsList(page: 1)
-            }
+                .sheet(isPresented: $viewModel.showFilter) {
+                    track("canceled")
+                    
+                } content: {
+                    NavigationView {
+                        ListView(filter: $viewModel.filterParams)
+                            .navigationTitle("Filter")
+                    }
+                }
         }
         .navigationViewStyle(.stack)
         .alert(context: alertContext)
     }
+}
+
+struct TestData: Identifiable {
+    var id = UUID()
+    var title: String
+    var items: [String]
+}
+
+struct ListView : View {
+    @Binding var filter: TicketFilterParameters
+    let mygroups = [
+        TestData(title: "Numbers", items: ["1","2","3"]),
+        TestData(title: "Letters", items: ["A","B","C"]),
+        TestData(title: "Symbols", items: ["€","%","&"])
+    ]
+    let returningClass = String.self
+    var body: some View {
+        List(mygroups) { gp in
+            Section(gp.title) {
+                SingleSelectionList (items:gp.items, selection:$filter, sectionType: returningClass) { item in
+                    HStack{
+                        Text(item)
+                        Spacer()
+                    }
+                }
+            }
+            
+        }
+        
+    }
+}
+
+struct SingleSelectionList<Item: Hashable, Content: View>: View {
     
-    var searchedTickets: [TicketRecord] {
-        if searchKey.isEmpty {
-            return ticketsList
-        } else {
-            return ticketsList.filter { $0.title.contains(searchKey) }
+    var items: [Item]
+    @Binding var selection: TicketFilterParameters
+    var sectionType: Item.Type
+    var rowContent: (Item) -> Content
+    
+    var body: some View {
+        ForEach(items, id: \.self) { item in
+            rowContent(item)
+                .modifier(CheckmarkModifier(checked: self.isChecked(item: item)))
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    self.selection.assignedUser = (item as? MemberRecord)
+                }
         }
     }
     
-    private func handleTicketsList(page: Int) async {
-        let ticketManager = TicketManager(identity: self.identity)
-        let ticketsResult = await ticketManager.listTeamTickets(page: page, queryParams: self.filterParams)
-        switch ticketsResult {
-        case .success(let tickets):
-            // Need to also check for invalid saved team
-            var ticketsListCopy = Array(self.ticketsList)
-            
-            for entry in tickets.results {
-                if !ticketsList.contains(entry) {
-                    ticketsListCopy.append(entry)
+  private func isChecked(item: Item) -> Bool {
+        
+        return self.selection.assignedUser?.id == (item as? MemberRecord)?.id
+    }
+}
+
+struct CheckmarkModifier: ViewModifier {
+    var checked: Bool = false
+    func body(content: Content) -> some View {
+        Group {
+            if checked {
+                ZStack(alignment: .trailing) {
+                    content
+                    Image(systemName: "checkmark")
+                        .resizable()
+                        .frame(width: 20, height: 20)
                 }
-                
+            } else {
+                content
             }
-            ticketsList = ticketsListCopy
-        case .failure(let error):
-            print(error)
-            alertContext.presentError(error: error)
         }
     }
 }
 
+
 struct TicketListView_Previews: PreviewProvider {
     static var previews: some View {
         TicketListView()
+    }
+}
+
+struct TicketList: View {
+    //    Simple struct to account for all the fancy styling on lists and Zstack
+    var tickets: [TicketRecord]
+    var body: some View {
+        List {
+            ForEach(tickets, id: \.id) { ticket in
+                ZStack {
+                    NavigationLink(destination: Text("HI")) {
+//                        Text(ticket.title)
+                    }
+                    .opacity(0.0)
+                    .buttonStyle(.plain)
+                    TicketPill(ticket: ticket)
+                }
+            }
+            .listRowSeparator(.hidden)
+            .listRowInsets(.none)
+//            .listRowBackground(Color.clear)
+            
+        }
+        .listStyle(.plain)
+        
     }
 }
