@@ -26,6 +26,7 @@ class BaseLoader {
                 track(value.debugDescription)
             default:
                 track(context.localizedDescription)
+                track(context)
 
             }
         }

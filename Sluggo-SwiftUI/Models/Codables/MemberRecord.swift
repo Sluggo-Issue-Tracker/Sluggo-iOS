@@ -8,7 +8,7 @@
 import Foundation
 import NullCodable
 // swiftlint:disable identifier_name
-struct MemberRecord: Codable, HasTitle, Identifiable {
+struct MemberRecord: Codable, HasTitle, Identifiable, Equatable {
     var id: String
     var owner: UserRecord
     var teamId: Int
@@ -21,5 +21,9 @@ struct MemberRecord: Codable, HasTitle, Identifiable {
 
     func getTitle() -> String {
         return owner.username
+    }
+    
+    static func == (lhs: MemberRecord, rhs: MemberRecord) -> Bool {
+        return lhs.objectUuid == rhs.objectUuid
     }
 }

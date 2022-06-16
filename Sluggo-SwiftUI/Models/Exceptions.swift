@@ -57,6 +57,11 @@ extension UIAlertController {
     }
 }
 
+public func track<Subject>(_ message: Subject) {
+    track(String(describing: message))
+}
+
+
 public func track(_ message: String, file: String = #file, function: String = #function, line: Int = #line ) {
     let className = file.components(separatedBy: "/").last
     print("DEBUG \(className!):\(function):\(line): \(message)")

@@ -9,7 +9,7 @@ import Foundation
 import NullCodable
 
 // swiftlint:disable identifier_name
-struct TagRecord: Codable, HasTitle, Identifiable {
+struct TagRecord: Codable, HasTitle, Identifiable, Equatable {
     var id: Int
     var teamId: Int
     var objectUuid: UUID
@@ -20,6 +20,10 @@ struct TagRecord: Codable, HasTitle, Identifiable {
 
     func getTitle() -> String {
         return title
+    }
+    
+    static func == (lhs: TagRecord, rhs: TagRecord) -> Bool {
+        return lhs.objectUuid == rhs.objectUuid
     }
 }
 
