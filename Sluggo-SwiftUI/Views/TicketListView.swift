@@ -12,130 +12,194 @@ struct TicketListView: View {
     @EnvironmentObject var identity: AppIdentity
     @StateObject private var alertContext = AlertContext()
     @StateObject private var viewModel = ViewModel()
+    @State private var showMessage = true
     
     var body: some View {
         NavigationView {
-            TicketList(tickets: viewModel.searchedTickets)
-                .searchable(text: $viewModel.searchKey)
-                .navigationTitle("Tickets")
-                .task {
-                    viewModel.setup(identity: identity, alertContext: alertContext)
-                    await viewModel.handleTicketsList(page: 1)
-                }
-                .refreshable {
-                    await viewModel.handleTicketsList(page: 1)
-                }
-                .toolbar {
-                    Menu {
-                        Button {} label: {Label("Create New", systemImage: "plus")}
-                        Button {viewModel.showFilter = true} label: {Label("Filter", systemImage: "folder")}
-                    } label: {
-                        Image(systemName: "ellipsis")
+            Group {
+                switch viewModel.loadState {
+                case .loading:
+                    VStack {
+                        Text("Retrieving Tickets")
+                        ProgressView()
                     }
-                }
-                .sheet(isPresented: $viewModel.showFilter) {
-                    track("canceled")
+                case .failed:
+                    ErrorPage(message: "Failed to retrieve Tickets") {
+                        // When the user attempts to retry, immediately switch back to
+                        // the loading state.
+                        viewModel.loadState = .loading
+                        
+                        Task {
+                            // Important: wait 0.5 seconds before retrying the download, to
+                            // avoid jumping straight back to .failed in case there are
+                            // internet problems.
+                            try await Task.sleep(nanoseconds: 500_000_000)
+                            await viewModel.handleTicketsList(page: 1)
+                        }
+                    }
+                case .success:
+                    TicketList(tickets: viewModel.searchedTickets) {
+                        Group {
+                            if viewModel.hasMore {
+                                Text("")
+                                    .task {
+                                        self.showMessage = true
+                                        await self.viewModel.handleTicketsList(page: viewModel.nextPage)
+                                    }
+                            } else {
+                                if showMessage {
+                                    Text("Congrats! No More Tickets")
+                                        .font(.headline)
+                                        .onAppear(perform: setDismissTimer)
+                                }
+                                
+                            }
+                        }
+                    }
+                    .searchable(text: $viewModel.searchKey)
+                    .refreshable {
+                        self.showMessage = true
+                        await viewModel.handleTicketsList(page: 1)
+                    }
                     
-                } content: {
-                    NavigationView {
-                        ListView(filter: $viewModel.filterParams)
-                            .navigationTitle("Filter")
-                    }
                 }
+            }
+            .task {
+                viewModel.setup(identity: identity, alertContext: alertContext)
+                await viewModel.handleTicketsList(page: 1)
+            }
+            .toolbar {
+                Menu {
+                    Button {} label: {Label("Create New", systemImage: "plus")}
+                    Button {viewModel.showFilter.toggle()} label: {Label("Filter", systemImage: "folder")}
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
+            .sheet(isPresented: $viewModel.showFilter, onDismiss: onFilter) {
+                NavigationView {
+                    FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
+                        .navigationTitle("Filter")
+                        .toolbar {
+                            ToolbarItem {
+                                Button("Done") {
+                                    viewModel.showFilter.toggle()
+                                }
+                            }
+                        }
+                }
+            }
+            .navigationTitle("Tickets")
         }
         .navigationViewStyle(.stack)
         .alert(context: alertContext)
     }
+    
+    func onFilter() {
+        if viewModel.filterParams.didChange {
+            viewModel.loadState = .loading
+            self.showMessage = true
+            Task {
+                try await Task.sleep(nanoseconds: 500_000_000)
+                await viewModel.handleTicketsList(page: 1)
+            }
+            viewModel.filterParams.didChange = false
+        }
+    }
+    
+    func setDismissTimer() {
+        let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
+            withAnimation(.easeInOut(duration: 2)) {
+                self.showMessage = false
+            }
+            timer.invalidate()
+        }
+        RunLoop.current.add(timer, forMode:RunLoop.Mode.default)
+    }
 }
 
-struct TestData: Identifiable {
-    var id = UUID()
-    var title: String
-    var items: [String]
-}
-
-struct ListView : View {
+struct FilterView : View {
     @Binding var filter: TicketFilterParameters
-    let mygroups = [
-        TestData(title: "Numbers", items: ["1","2","3"]),
-        TestData(title: "Letters", items: ["A","B","C"]),
-        TestData(title: "Symbols", items: ["€","%","&"])
-    ]
-    let returningClass = String.self
+    @State var identity: AppIdentity
+    @State var alertContext: AlertContext
+    @State var teamMembers: [MemberRecord] = []
+    @State var ticketTags: [TagRecord] = []
+    @State var ticketStatuses: [StatusRecord] = []
+    private let semaphore = DispatchSemaphore(value: 1)
     var body: some View {
-        List(mygroups) { gp in
-            Section(gp.title) {
-                SingleSelectionList (items:gp.items, selection:$filter, sectionType: returningClass) { item in
-                    HStack{
-                        Text(item)
+        List {
+            Section("Members") {
+                SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser, sectionType: MemberRecord.self) { item in
+                    HStack {
+                        Text(item.getTitle())
                         Spacer()
                     }
                 }
             }
-            
-        }
-        
-    }
-}
-
-struct SingleSelectionList<Item: Hashable, Content: View>: View {
-    
-    var items: [Item]
-    @Binding var selection: TicketFilterParameters
-    var sectionType: Item.Type
-    var rowContent: (Item) -> Content
-    
-    var body: some View {
-        ForEach(items, id: \.self) { item in
-            rowContent(item)
-                .modifier(CheckmarkModifier(checked: self.isChecked(item: item)))
-                .contentShape(Rectangle())
-                .onTapGesture {
-                    self.selection.assignedUser = (item as? MemberRecord)
+            Section("Tags") {
+                SingleSelectionList (items: ticketTags, didChange:$filter.didChange, selection:$filter.ticketTag, sectionType: TagRecord.self) { item in
+                    HStack {
+                        Text(item.getTitle())
+                        Spacer()
+                    }
                 }
-        }
-    }
-    
-  private func isChecked(item: Item) -> Bool {
-        
-        return self.selection.assignedUser?.id == (item as? MemberRecord)?.id
-    }
-}
-
-struct CheckmarkModifier: ViewModifier {
-    var checked: Bool = false
-    func body(content: Content) -> some View {
-        Group {
-            if checked {
-                ZStack(alignment: .trailing) {
-                    content
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .frame(width: 20, height: 20)
+            }
+            Section("Statuses") {
+                SingleSelectionList (items: ticketStatuses, didChange:$filter.didChange, selection:$filter.ticketStatus, sectionType: StatusRecord.self) { item in
+                    HStack {
+                        Text(item.getTitle())
+                        Spacer()
+                    }
                 }
-            } else {
-                content
             }
         }
+        .task(doLoad)
     }
+    
+    @Sendable func doLoad() async {
+        let tagManager = TagManager(identity: self.identity)
+        let statusManger = StatusManager(identity: self.identity)
+        let memberManager = MemberManager(identity: self.identity)
+        
+        let tagsResult = await tagManager.listFromTeams(page: 0)
+        switch tagsResult {
+        case .success(let tags):
+            self.ticketTags = tags
+        case .failure(let error):
+            print(error)
+            self.alertContext.presentError(error: error)
+        }
+        
+        let statusResult = await statusManger.listFromTeams(page: 0)
+        switch statusResult {
+        case .success(let statuses):
+            self.ticketStatuses = statuses
+        case .failure(let error):
+            print(error)
+            self.alertContext.presentError(error: error)
+        }
+        
+        unwindPagination(manager: memberManager,
+                         startingPage: 1,
+                         onSuccess: { members in
+            self.teamMembers = members
+        },
+                         onFailure:  nil,
+                         after: nil)
+    }
+    
 }
 
 
-struct TicketListView_Previews: PreviewProvider {
-    static var previews: some View {
-        TicketListView()
-    }
-}
-
-struct TicketList: View {
+struct TicketList<Content:View>: View {
     //    Simple struct to account for all the fancy styling on lists and Zstack
     var tickets: [TicketRecord]
+    var loadMore: () -> Content
     var body: some View {
         List {
             ForEach(tickets, id: \.id) { ticket in
                 ZStack {
                     NavigationLink(destination: Text("HI")) {
-//                        Text(ticket.title)
                     }
                     .opacity(0.0)
                     .buttonStyle(.plain)
@@ -144,10 +208,10 @@ struct TicketList: View {
             }
             .listRowSeparator(.hidden)
             .listRowInsets(.none)
-//            .listRowBackground(Color.clear)
-            
+            loadMore()
         }
         .listStyle(.plain)
         
     }
 }
+
