@@ -11,6 +11,7 @@ struct TicketFilterParameters {
     var assignedUser: MemberRecord?
     var ticketTag: TagRecord?
     var ticketStatus: StatusRecord?
+    var didChange: Bool = false
 
     init(assignedUser: MemberRecord? = nil, ticketTag: TagRecord? = nil, ticketStatus: StatusRecord? = nil) {
         self.assignedUser = assignedUser

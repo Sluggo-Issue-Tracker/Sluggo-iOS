@@ -7,7 +7,7 @@
 
 import Foundation
 
-class TagManager: TeamPaginatedListable {
+class TagManager {
 
     static let urlBase = "/tags/"
     private var identity: AppIdentity
@@ -30,7 +30,7 @@ class TagManager: TeamPaginatedListable {
         return URL(string: urlString)!
     }
 
-    func listFromTeams(page: Int) async -> Result<PaginatedList<TagRecord>, Error> {
+    func listFromTeams(page: Int) async -> Result<[TagRecord], Error> {
         let requestBuilder = URLRequestBuilder(url: makeListUrl(page: page))
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
