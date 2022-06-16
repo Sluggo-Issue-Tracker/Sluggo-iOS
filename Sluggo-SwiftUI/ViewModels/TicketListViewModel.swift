@@ -11,7 +11,7 @@ import SwiftUI
 
 extension TicketListView {
     
-    @MainActor class ViewModel: ObservableObject {
+    class ViewModel: ObservableObject {
         var identity: AppIdentity?
         var alertContext: AlertContext?
         @Published var ticketsList: [TicketRecord] = []
@@ -20,6 +20,7 @@ extension TicketListView {
         @Published var showFilter: Bool = false
         @Published var searchKey = ""
         @Published var loadState = LoadState.loading
+        @Published var showMessage = true
         @Published private var nextPageStr: String?
         
         var hasMore: Bool {
@@ -132,6 +133,29 @@ extension TicketListView {
         func setup(identity: AppIdentity, alertContext: AlertContext) {
             self.identity = identity
             self.alertContext = alertContext
+        }
+        
+        
+        func onFilter() {
+            if self.filterParams.didChange {
+                self.loadState = .loading
+                self.showMessage = true
+                Task {
+                    try await Task.sleep(nanoseconds: 500_000_000)
+                    await self.handleTicketsList(page: 1)
+                }
+                self.filterParams.didChange = false
+            }
+        }
+        
+        func setDismissTimer() {
+            let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
+                withAnimation(.easeInOut(duration: 2)) {
+                    self.showMessage = false
+                }
+                timer.invalidate()
+            }
+            RunLoop.current.add(timer, forMode:RunLoop.Mode.default)
         }
     }
 }

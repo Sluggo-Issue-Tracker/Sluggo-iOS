@@ -12,7 +12,6 @@ struct TicketListView: View {
     @EnvironmentObject var identity: AppIdentity
     @StateObject private var alertContext = AlertContext()
     @StateObject private var viewModel = ViewModel()
-    @State private var showMessage = true
     
     var body: some View {
         NavigationView {
@@ -43,14 +42,14 @@ struct TicketListView: View {
                             if viewModel.hasMore {
                                 Text("")
                                     .task {
-                                        self.showMessage = true
+                                        self.viewModel.showMessage = true
                                         await self.viewModel.handleTicketsList(page: viewModel.nextPage)
                                     }
                             } else {
-                                if showMessage {
+                                if viewModel.showMessage {
                                     Text("Congrats! No More Tickets")
                                         .font(.headline)
-                                        .onAppear(perform: setDismissTimer)
+                                        .onAppear(perform: viewModel.setDismissTimer)
                                 }
                                 
                             }
@@ -58,7 +57,7 @@ struct TicketListView: View {
                     }
                     .searchable(text: $viewModel.searchKey)
                     .refreshable {
-                        self.showMessage = true
+                        self.viewModel.showMessage = true
                         await viewModel.handleTicketsList(page: 1)
                     }
                     
@@ -76,7 +75,7 @@ struct TicketListView: View {
                     Image(systemName: "ellipsis")
                 }
             }
-            .sheet(isPresented: $viewModel.showFilter, onDismiss: onFilter) {
+            .sheet(isPresented: $viewModel.showFilter, onDismiss: viewModel.onFilter) {
                 NavigationView {
                     FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
                         .navigationTitle("Filter")
@@ -94,28 +93,6 @@ struct TicketListView: View {
         .navigationViewStyle(.stack)
         .alert(context: alertContext)
     }
-    
-    func onFilter() {
-        if viewModel.filterParams.didChange {
-            viewModel.loadState = .loading
-            self.showMessage = true
-            Task {
-                try await Task.sleep(nanoseconds: 500_000_000)
-                await viewModel.handleTicketsList(page: 1)
-            }
-            viewModel.filterParams.didChange = false
-        }
-    }
-    
-    func setDismissTimer() {
-        let timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { timer in
-            withAnimation(.easeInOut(duration: 2)) {
-                self.showMessage = false
-            }
-            timer.invalidate()
-        }
-        RunLoop.current.add(timer, forMode:RunLoop.Mode.default)
-    }
 }
 
 struct FilterView : View {
@@ -129,7 +106,7 @@ struct FilterView : View {
     var body: some View {
         List {
             Section("Members") {
-                SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser, sectionType: MemberRecord.self) { item in
+                SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser) { item in
                     HStack {
                         Text(item.getTitle())
                         Spacer()
@@ -137,7 +114,7 @@ struct FilterView : View {
                 }
             }
             Section("Tags") {
-                SingleSelectionList (items: ticketTags, didChange:$filter.didChange, selection:$filter.ticketTag, sectionType: TagRecord.self) { item in
+                SingleSelectionList (items: ticketTags, didChange:$filter.didChange, selection:$filter.ticketTag) { item in
                     HStack {
                         Text(item.getTitle())
                         Spacer()
@@ -145,7 +122,7 @@ struct FilterView : View {
                 }
             }
             Section("Statuses") {
-                SingleSelectionList (items: ticketStatuses, didChange:$filter.didChange, selection:$filter.ticketStatus, sectionType: StatusRecord.self) { item in
+                SingleSelectionList (items: ticketStatuses, didChange:$filter.didChange, selection:$filter.ticketStatus) { item in
                     HStack {
                         Text(item.getTitle())
                         Spacer()

@@ -52,8 +52,10 @@ class AppIdentity: Codable, ObservableObject {
             return _authenticatedLogin?.accessToken
         }
         set (newToken) {
-            _authenticatedLogin?.accessToken = newToken
-            enqueueSave()
+            DispatchQueue.main.async {
+                self._authenticatedLogin?.accessToken = newToken
+                self.enqueueSave()
+            }
         }
     }
     var refreshToken: String? {
@@ -61,8 +63,10 @@ class AppIdentity: Codable, ObservableObject {
             return _authenticatedLogin?.refreshToken
         }
         set (newToken) {
-            _authenticatedLogin?.refreshToken = newToken
-            enqueueSave()
+            DispatchQueue.main.async {
+                self._authenticatedLogin?.refreshToken = newToken
+                self.enqueueSave()
+            }
         }
     }
     var pageSize: Int {
