@@ -22,7 +22,7 @@ struct StatusRecord: Codable, HasTitle, Identifiable, Equatable {
         return title
     }
     
-    static func == (lhs: StatusRecord, rhs: StatusRecord) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.objectUuid == rhs.objectUuid
     }
 }

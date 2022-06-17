@@ -25,7 +25,6 @@
 		2F2E6C4C2693BA0200968B3A /* LogoutMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C2B2693BA0200968B3A /* LogoutMessage.swift */; };
 		2F2E6C4D2693BA0200968B3A /* StatusRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C2C2693BA0200968B3A /* StatusRecord.swift */; };
 		2F2E6C4E2693BA0200968B3A /* ErrorMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C2D2693BA0200968B3A /* ErrorMessage.swift */; };
-		2F2E6C4F2693BA0200968B3A /* TokenRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C2E2693BA0200968B3A /* TokenRecord.swift */; };
 		2F2E6C502693BA0300968B3A /* InviteRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C2F2693BA0200968B3A /* InviteRecord.swift */; };
 		2F2E6C512693BA0300968B3A /* JsonLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C302693BA0200968B3A /* JsonLoader.swift */; };
 		2F2E6C522693BA0300968B3A /* URLRequestBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6C312693BA0200968B3A /* URLRequestBuilder.swift */; };
@@ -100,7 +99,6 @@
 		2F2E6C2B2693BA0200968B3A /* LogoutMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogoutMessage.swift; sourceTree = "<group>"; };
 		2F2E6C2C2693BA0200968B3A /* StatusRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusRecord.swift; sourceTree = "<group>"; };
 		2F2E6C2D2693BA0200968B3A /* ErrorMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorMessage.swift; sourceTree = "<group>"; };
-		2F2E6C2E2693BA0200968B3A /* TokenRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenRecord.swift; sourceTree = "<group>"; };
 		2F2E6C2F2693BA0200968B3A /* InviteRecord.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InviteRecord.swift; sourceTree = "<group>"; };
 		2F2E6C302693BA0200968B3A /* JsonLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JsonLoader.swift; sourceTree = "<group>"; };
 		2F2E6C312693BA0200968B3A /* URLRequestBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLRequestBuilder.swift; sourceTree = "<group>"; };
@@ -259,7 +257,6 @@
 				2F2E6C2B2693BA0200968B3A /* LogoutMessage.swift */,
 				2F2E6C2C2693BA0200968B3A /* StatusRecord.swift */,
 				2F2E6C2D2693BA0200968B3A /* ErrorMessage.swift */,
-				2F2E6C2E2693BA0200968B3A /* TokenRecord.swift */,
 				2F2E6C2F2693BA0200968B3A /* InviteRecord.swift */,
 			);
 			path = Codables;
@@ -453,7 +450,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F2E6C4F2693BA0200968B3A /* TokenRecord.swift in Sources */,
 				2F2E6C602693BA0300968B3A /* AppIdentity.swift in Sources */,
 				2FDC3F2726DD7BAD0020A36D /* AlertContext.swift in Sources */,
 				2F2E6C5F2693BA0300968B3A /* Exceptions.swift in Sources */,

@@ -18,7 +18,7 @@ struct TeamRecord: Codable, Equatable, Identifiable {
     @NullCodable var activated: Date?
     @NullCodable var deactivated: Date?
 
-    static func == (lhs: TeamRecord, rhs: TeamRecord) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.objectUuid == rhs.objectUuid
     }
 

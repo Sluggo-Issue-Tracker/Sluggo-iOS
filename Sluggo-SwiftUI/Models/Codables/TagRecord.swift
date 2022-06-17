@@ -22,7 +22,7 @@ struct TagRecord: Codable, HasTitle, Identifiable, Equatable {
         return title
     }
     
-    static func == (lhs: TagRecord, rhs: TagRecord) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.objectUuid == rhs.objectUuid
     }
 }

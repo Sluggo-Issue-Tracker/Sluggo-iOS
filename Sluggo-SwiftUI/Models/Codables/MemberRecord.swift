@@ -23,7 +23,7 @@ struct MemberRecord: Codable, HasTitle, Identifiable, Equatable {
         return owner.username
     }
     
-    static func == (lhs: MemberRecord, rhs: MemberRecord) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.objectUuid == rhs.objectUuid
     }
 }

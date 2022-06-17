@@ -24,7 +24,7 @@ struct TicketRecord: Codable, Identifiable, Equatable {
     @NullCodable var activated: Date?
     @NullCodable var deactivated: Date?
     
-    static func == (lhs: TicketRecord, rhs: TicketRecord) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         return lhs.objectUuid == rhs.objectUuid
     }
     

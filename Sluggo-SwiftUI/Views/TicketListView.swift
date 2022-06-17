@@ -102,7 +102,6 @@ struct FilterView : View {
     @State var teamMembers: [MemberRecord] = []
     @State var ticketTags: [TagRecord] = []
     @State var ticketStatuses: [StatusRecord] = []
-    private let semaphore = DispatchSemaphore(value: 1)
     var body: some View {
         List {
             Section("Members") {
@@ -138,7 +137,7 @@ struct FilterView : View {
         let statusManger = StatusManager(identity: self.identity)
         let memberManager = MemberManager(identity: self.identity)
         
-        let tagsResult = await tagManager.listFromTeams(page: 0)
+        let tagsResult = await tagManager.listFromTeams()
         switch tagsResult {
         case .success(let tags):
             self.ticketTags = tags
@@ -147,7 +146,7 @@ struct FilterView : View {
             self.alertContext.presentError(error: error)
         }
         
-        let statusResult = await statusManger.listFromTeams(page: 0)
+        let statusResult = await statusManger.listFromTeams()
         switch statusResult {
         case .success(let statuses):
             self.ticketStatuses = statuses

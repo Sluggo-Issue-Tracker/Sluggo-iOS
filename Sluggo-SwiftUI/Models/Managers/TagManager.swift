@@ -24,14 +24,14 @@ class TagManager {
         return URL(string: urlString)!
     }
 
-    private func makeListUrl(page: Int) -> URL {
+    private func makeListUrl() -> URL {
         let urlString = identity.baseAddress + TeamManager.urlBase +
-            "\(identity.team!.id)" + TagManager.urlBase + "?page=\(page)"
+            "\(identity.team!.id)" + TagManager.urlBase
         return URL(string: urlString)!
     }
 
-    func listFromTeams(page: Int) async -> Result<[TagRecord], Error> {
-        let requestBuilder = URLRequestBuilder(url: makeListUrl(page: page))
+    func listFromTeams() async -> Result<[TagRecord], Error> {
+        let requestBuilder = URLRequestBuilder(url: makeListUrl())
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 
@@ -44,7 +44,7 @@ class TagManager {
             return .failure(Exception.runtimeError(message: errorMessage))
         }
 
-        let requestBuilder = URLRequestBuilder(url: makeListUrl(page: 1))
+        let requestBuilder = URLRequestBuilder(url: makeListUrl())
             .setMethod(method: .POST)
             .setData(data: body)
             .setIdentity(identity: self.identity)

@@ -18,9 +18,9 @@ class TeamManager {
         self.requestLoader = requestLoader ?? JsonLoader(identity: self.identity)
     }
 
-    func listFromTeams(page: Int) async -> Result<[TeamRecord], Error> {
+    func listFromTeams() async -> Result<[TeamRecord], Error> {
 
-        let urlString = identity.baseAddress + TeamManager.urlBase + "?page=\(page)"
+        let urlString = identity.baseAddress + TeamManager.urlBase
         let requestBuilder = URLRequestBuilder(url: URL(string: urlString)!)
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
