@@ -8,7 +8,7 @@
 import Foundation
 import NullCodable
 // swiftlint:disable identifier_name
-struct MemberRecord: Codable, HasTitle, Identifiable, Equatable {
+struct MemberRecord: Codable, HasTitle, Identifiable, Equatable, Hashable {
     var id: String
     var owner: UserRecord
     var teamId: Int

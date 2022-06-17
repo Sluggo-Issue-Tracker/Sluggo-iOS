@@ -172,23 +172,30 @@ struct TicketList<Content:View>: View {
     //    Simple struct to account for all the fancy styling on lists and Zstack
     var tickets: [TicketRecord]
     var loadMore: () -> Content
+    @State private var selected: TicketRecord?
     var body: some View {
         List {
-            ForEach(tickets, id: \.id) { ticket in
-                ZStack {
-                    NavigationLink(destination: Text("HI")) {
+            ForEach(tickets) { ticket in
+                ZStack{
+                    NavigationLink(destination: Text(ticket.title), tag: ticket, selection: $selected) {
+                        EmptyView()
                     }
-                    .opacity(0.0)
-                    .buttonStyle(.plain)
+                    .hidden()
                     TicketPill(ticket: ticket)
+                        .overlay(selected == ticket ? Color(white: 0.75, opacity: 0.25) : Color.clear)
+                        .onTapGesture {
+                            self.selected = ticket
+                        }
                 }
             }
             .listRowSeparator(.hidden)
             .listRowInsets(.none)
+            .listRowBackground(Color.clear)
             loadMore()
         }
         .listStyle(.plain)
         
     }
 }
+
 
