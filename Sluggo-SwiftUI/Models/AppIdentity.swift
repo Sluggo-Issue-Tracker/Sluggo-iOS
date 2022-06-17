@@ -53,6 +53,7 @@ class AppIdentity: Codable, ObservableObject {
         }
         set (newToken) {
             DispatchQueue.main.async {
+                self.persist = true
                 self._authenticatedLogin?.accessToken = newToken
                 self.enqueueSave()
             }
@@ -64,6 +65,7 @@ class AppIdentity: Codable, ObservableObject {
         }
         set (newToken) {
             DispatchQueue.main.async {
+                self.persist = true
                 self._authenticatedLogin?.refreshToken = newToken
                 self.enqueueSave()
             }

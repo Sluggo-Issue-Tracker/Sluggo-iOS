@@ -40,7 +40,7 @@ struct TicketListView: View {
                     TicketList(tickets: viewModel.searchedTickets) {
                         Group {
                             if viewModel.hasMore {
-                                Text("")
+                                ProgressView()
                                     .task {
                                         self.viewModel.showMessage = true
                                         await self.viewModel.handleTicketsList(page: viewModel.nextPage)
@@ -49,6 +49,7 @@ struct TicketListView: View {
                                 if viewModel.showMessage {
                                     Text("Congrats! No More Tickets")
                                         .font(.headline)
+                                        .frame(maxWidth: .infinity, alignment: .center)
                                         .onAppear(perform: viewModel.setDismissTimer)
                                 }
                                 
@@ -104,7 +105,7 @@ struct FilterView : View {
     @State var ticketStatuses: [StatusRecord] = []
     var body: some View {
         List {
-            Section("Members") {
+            Section("Assigned User") {
                 SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser) { item in
                     HStack {
                         Text(item.getTitle())
