@@ -50,16 +50,16 @@ struct LaunchView: View {
     }
     
     private func tryTeam() async {
-        print("In tryTeam")
+        track("In tryTeam")
         if let team = identity.team {
             let teamManager = TeamManager(identity: self.identity)
             let result = await teamManager.getTeam(team: team)
             switch result {
             case .success(let teamRecord):
-                DispatchQueue.main.sync {
+                
                     
                     self.identity.team = teamRecord
-                }
+                
             case .failure(let error):
                 print(error)
                 DispatchQueue.main.sync {
@@ -74,7 +74,7 @@ struct LaunchView: View {
     }
     
     private func showLogin() {
-        print("In showLogin")
+        track("In showLogin")
         self.showLoginModal.toggle()
     }
 }

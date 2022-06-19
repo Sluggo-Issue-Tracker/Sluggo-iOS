@@ -52,8 +52,11 @@ class AppIdentity: Codable, ObservableObject {
             return _authenticatedLogin?.accessToken
         }
         set (newToken) {
-            _authenticatedLogin?.accessToken = newToken
-            enqueueSave()
+            DispatchQueue.main.async {
+                self.persist = true
+                self._authenticatedLogin?.accessToken = newToken
+                self.enqueueSave()
+            }
         }
     }
     var refreshToken: String? {
@@ -61,8 +64,11 @@ class AppIdentity: Codable, ObservableObject {
             return _authenticatedLogin?.refreshToken
         }
         set (newToken) {
-            _authenticatedLogin?.refreshToken = newToken
-            enqueueSave()
+            DispatchQueue.main.async {
+                self.persist = true
+                self._authenticatedLogin?.refreshToken = newToken
+                self.enqueueSave()
+            }
         }
     }
     var pageSize: Int {
@@ -133,12 +139,12 @@ class AppIdentity: Codable, ObservableObject {
 
     func saveToDisk() -> Bool {
         guard let appIdentityData = BaseLoader.encode(object: self) else {
-            print("Failed to encode app identity with JSON, could not persist")
+            track("Failed to encode app identity with JSON, could not persist")
             return false
         }
 
         guard let appIdentityContents = String(data: appIdentityData, encoding: .utf8) else {
-            print("Failed to encode app identity encoded data as string, could not persist")
+            track("Failed to encode app identity encoded data as string, could not persist")
             return false
         }
 
@@ -146,25 +152,25 @@ class AppIdentity: Codable, ObservableObject {
             try appIdentityContents.write(to: AppIdentity.persistencePath, atomically: true, encoding: String.Encoding.utf8)
             return true
         } catch {
-            print("Could not write persistence file to disk, could not persist")
+            track("Could not write persistence file to disk, could not persist")
             return false
         }
     }
 
     static func deletePersistenceFile() -> Bool {
         // Succeed if the persistence file doesn't exist. This allows us to clean up a bad file.
-        print("in delete")
+        track("in delete")
         if !(FileManager.default.fileExists(atPath: self.persistencePath.path)) {
-            print("Attempted to delete persistence file when it doesn't exist, returning")
+            track("Attempted to delete persistence file when it doesn't exist, returning")
             return true
         }
 
         do {
             try FileManager.default.removeItem(at: self.persistencePath)
-            print("Cleaned up persistance item")
+            track("Cleaned up persistance item")
             return true
         } catch {
-            print("FAILED TO CLEAN UP PERSISTENCE FILE")
+            track("FAILED TO CLEAN UP PERSISTENCE FILE")
             return false
         }
     }

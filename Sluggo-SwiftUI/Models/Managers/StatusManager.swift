@@ -7,7 +7,7 @@
 
 import Foundation
 
-class StatusManager: TeamPaginatedListable {
+class StatusManager {
     
     static let urlBase = "/statuses/"
     private let identity: AppIdentity
@@ -24,14 +24,14 @@ class StatusManager: TeamPaginatedListable {
         return URL(string: urlString)!
     }
 
-    private func makeListUrl(page: Int) -> URL {
+    private func makeListUrl() -> URL {
         let urlString = identity.baseAddress + TeamManager.urlBase +
-            "\(identity.team!.id)" + StatusManager.urlBase + "?page=\(page)"
+            "\(identity.team!.id)" + StatusManager.urlBase
         return URL(string: urlString)!
     }
 
-    func listFromTeams(page: Int) async -> Result<PaginatedList<StatusRecord>, Error>{
-        let requestBuilder = URLRequestBuilder(url: makeListUrl(page: page))
+    func listFromTeams() async -> Result<[StatusRecord], Error>{
+        let requestBuilder = URLRequestBuilder(url: makeListUrl())
             .setIdentity(identity: identity)
             .setMethod(method: .GET)
 

@@ -48,6 +48,10 @@ class AlertContext: ObservableObject {
                 message = errMsg
             }
         }
+        
+        if message == "cancelled" {
+            return
+        }
 
         alertTitle = "Error"
         alertMessage = message ?? "Error message not provided"
