@@ -177,7 +177,7 @@ struct TicketList<Content:View>: View {
         List {
             ForEach(tickets) { ticket in
                 ZStack{
-                    NavigationLink(destination: Text(ticket.title), tag: ticket, selection: $selected) {
+                    NavigationLink(destination: TicketDetail(ticket: ticket), tag: ticket, selection: $selected) {
                         EmptyView()
                     }
                     .hidden()
