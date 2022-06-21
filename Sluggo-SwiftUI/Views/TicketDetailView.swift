@@ -10,17 +10,34 @@ import SwiftUI
 
 struct TicketDetail: View {
     
+    @Environment(\.editMode) private var editMode
+    
+    @State var selectedIndex: Int = 0
+    @State var teamMembers: [MemberRecord] = []
     @State var ticket: TicketRecord
-    @State var showModalView = false
+    @State var pickerVisible: Bool = false
+    
     
     var body: some View {
 
         List {
             Section(header: Text("Title")) {
+                if editMode?.wrappedValue.isEditing == true {
+                    TextField("Required", text: $ticket.title)
+                } else {
                     Text(ticket.title)
                 }
+            }
             Section(header: Text("Assigned User")) {
-                Text("\(ticket.assignedUser?.getTitle() ?? "")")
+                if editMode?.wrappedValue.isEditing == true {
+                    Picker("\(ticket.assignedUser?.getTitle() ?? "")", selection: $ticket.assignedUser, content: {
+                        ForEach(teamMembers) { member in
+                            Text(member.owner.username)
+                        }
+                    })
+                } else {
+                    Text("\(ticket.assignedUser?.getTitle() ?? "")")
+                }
             }
             Section(header: Text("Status")) {
                 Text("\(ticket.status?.getTitle() ?? "")")
@@ -44,27 +61,28 @@ struct TicketDetail: View {
                 }
             }
             Section(header: Text("Description")) {
-                VStack(spacing: 0) {
-                    Spacer()
-                    Text("\(ticket.description ?? "")")
+                if editMode?.wrappedValue.isEditing == true {
+                    TextEditor(text: $ticket.description ?? "")
                         .frame(minHeight: 100, alignment: .topLeading)
+                } else {
+                    VStack(spacing: 0) {
+                        Spacer()
+                        Text("\(ticket.description ?? "")")
+                            .frame(minHeight: 100, alignment: .topLeading)
+                    }
                 }
-                
             }
-            
-            
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: Button(action: {
-            self.showModalView.toggle()
-        }) {
-            Text("Edit")
-        }
-            .sheet(isPresented: $showModalView) {
-                TicketEditDetail(ticket: ticket, showModalView: $showModalView)
-                
-            })
+        .navigationBarItems(trailing: EditButton())
     }
+}
+
+func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
+    Binding(
+        get: { lhs.wrappedValue ?? rhs },
+        set: { lhs.wrappedValue = $0 }
+    )
 }
 
 struct TicketEditDetail: View {
@@ -76,7 +94,7 @@ struct TicketEditDetail: View {
         NavigationView {
             List {
                 Section(header: Text("Title")) {
-                    Text(ticket.title)
+                    TextField("Required", text: $ticket.title)
                 }
                 Section(header: Text("Assigned User")) {
                     Text("\(ticket.assignedUser?.getTitle() ?? "")")
@@ -111,7 +129,13 @@ struct TicketEditDetail: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .navigationBarItems(leading: Button("Cancel") {self.showModalView.toggle()}, trailing: Button("Done") {})
+            .navigationBarItems(
+                leading: Button("Cancel") {
+                    self.showModalView.toggle()
+                    
+                }, trailing: Button("Done") {
+                    
+                })
         }
         
     }
