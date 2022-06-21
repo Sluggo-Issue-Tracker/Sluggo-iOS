@@ -13,10 +13,11 @@ struct TicketDetail: View {
     @State var ticket: TicketRecord
     
     var body: some View {
+
         List {
             Section(header: Text("Title")) {
-                Text(ticket.title)
-            }
+                    Text(ticket.title)
+                }
             Section(header: Text("Assigned User")) {
                 Text("\(ticket.assignedUser?.getTitle() ?? "")")
             }
@@ -24,19 +25,34 @@ struct TicketDetail: View {
                 Text("\(ticket.status?.getTitle() ?? "")")
             }
             Section(header: Text("Tags")) {
-                ForEach(ticket.tagList) { tag in
-                    Text(tag.title)
+                if(ticket.tagList.isEmpty) {
+                    Text("")
+                }
+                else {
+                    ForEach(ticket.tagList) { tag in
+                        Text(tag.title)
+                    }
                 }
             }
             Section(header: Text("Date Due")) {
-                Text(ticket.dueDate ?? Date(), style: .date)
+                if(ticket.dueDate == nil) {
+                    Text("")
+                }
+                else {
+                    Text(ticket.dueDate ?? Date(), style: .date)
+                }
             }
             Section(header: Text("Description")) {
-                Text("\(ticket.description ?? "")")
+                VStack(spacing: 0) {
+                    Spacer()
+                    Text("\(ticket.description ?? "")")
+                        .frame(minHeight: 100, alignment: .topLeading)
+                }
+                
             }
             
+            
         }
-        
+        .navigationBarItems(trailing: Button("Edit") {})
     }
-    
 }
