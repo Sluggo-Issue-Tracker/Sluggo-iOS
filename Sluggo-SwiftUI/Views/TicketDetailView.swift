@@ -53,6 +53,7 @@ struct TicketDetail: View {
             
             
         }
+        .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing: Button("Edit") {})
     }
 }
