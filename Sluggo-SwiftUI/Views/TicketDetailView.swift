@@ -10,34 +10,17 @@ import SwiftUI
 
 struct TicketDetail: View {
     
-    @Environment(\.editMode) private var editMode
-    
-    @State var selectedIndex: Int = 0
-    @State var teamMembers: [MemberRecord] = []
     @State var ticket: TicketRecord
-    @State var pickerVisible: Bool = false
-    
+    @State var showModalView = false
     
     var body: some View {
 
         List {
             Section(header: Text("Title")) {
-                if editMode?.wrappedValue.isEditing == true {
-                    TextField("Required", text: $ticket.title)
-                } else {
-                    Text(ticket.title)
-                }
+                TextField("Required", text: $ticket.title)
             }
             Section(header: Text("Assigned User")) {
-                if editMode?.wrappedValue.isEditing == true {
-                    Picker("\(ticket.assignedUser?.getTitle() ?? "")", selection: $ticket.assignedUser, content: {
-                        ForEach(teamMembers) { member in
-                            Text(member.owner.username)
-                        }
-                    })
-                } else {
-                    Text("\(ticket.assignedUser?.getTitle() ?? "")")
-                }
+                Text("\(ticket.assignedUser?.getTitle() ?? "")")
             }
             Section(header: Text("Status")) {
                 Text("\(ticket.status?.getTitle() ?? "")")
@@ -61,34 +44,36 @@ struct TicketDetail: View {
                 }
             }
             Section(header: Text("Description")) {
-                if editMode?.wrappedValue.isEditing == true {
-                    TextEditor(text: $ticket.description ?? "")
+                VStack(spacing: 0) {
+                    Spacer()
+                    Text("\(ticket.description ?? "")")
                         .frame(minHeight: 100, alignment: .topLeading)
-                } else {
-                    VStack(spacing: 0) {
-                        Spacer()
-                        Text("\(ticket.description ?? "")")
-                            .frame(minHeight: 100, alignment: .topLeading)
-                    }
                 }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .navigationBarItems(trailing: EditButton())
+        .navigationBarItems(trailing: Button("Edit"){
+            self.showModalView.toggle()
+        })
+        .fullScreenCover(isPresented: $showModalView) {
+            TicketEditDetail(ticket: ticket, showModalView: self.$showModalView)
+                .transition(.opacity) //Doesn't work
+        }
+        
     }
-}
-
-func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
-    Binding(
-        get: { lhs.wrappedValue ?? rhs },
-        set: { lhs.wrappedValue = $0 }
-    )
 }
 
 struct TicketEditDetail: View {
     
+    @EnvironmentObject var identity: AppIdentity
+    @StateObject var alertContext = AlertContext()
+    
     @State var ticket: TicketRecord
     @Binding var showModalView: Bool
+    
+    @State var teamMembers: [MemberRecord] = []
+    @State var ticketStatus: [StatusRecord] = []
+    @State var ticketTags: [TagRecord] = []
     
     var body: some View {
         NavigationView {
@@ -97,7 +82,11 @@ struct TicketEditDetail: View {
                     TextField("Required", text: $ticket.title)
                 }
                 Section(header: Text("Assigned User")) {
-                    Text("\(ticket.assignedUser?.getTitle() ?? "")")
+                    Picker("\(ticket.assignedUser?.getTitle() ?? "")", selection: $ticket.assignedUser, content: {
+                        ForEach(teamMembers) { member in
+                            Text(member.owner.username)
+                        }
+                    })
                 }
                 Section(header: Text("Status")) {
                     Text("\(ticket.status?.getTitle() ?? "")")
@@ -121,11 +110,8 @@ struct TicketEditDetail: View {
                     }
                 }
                 Section(header: Text("Description")) {
-                    VStack(spacing: 0) {
-                        Spacer()
-                        Text("\(ticket.description ?? "")")
-                            .frame(minHeight: 100, alignment: .topLeading)
-                    }
+                    TextEditor(text: $ticket.description ?? "")
+                        .frame(minHeight: 100, alignment: .topLeading)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -136,7 +122,58 @@ struct TicketEditDetail: View {
                 }, trailing: Button("Done") {
                     
                 })
+            .task(doLoad)
+        }
+    }
+    
+    @Sendable func doLoad() async{
+//        let ticketManager = TicketManager(identity: self.identity)
+//
+//        let ticketResult = await ticketManager.updateTicket(ticket: ticket)
+//
+//        switch ticketResult {
+//            case .success(let ticket):
+//                self.ticket = ticket
+//            case .failure(let error):
+//                print(error)
+//                self.alertContext.presentError(error: error)
+//        }
+        
+        let memberManager = MemberManager(identity: self.identity)
+        let statusManager = StatusManager(identity: self.identity)
+        let tagManager = TagManager(identity: self.identity)
+        
+        unwindPagination(manager: memberManager,
+                         startingPage: 1,
+                         onSuccess: { members in
+            self.teamMembers = members
+        },
+                         onFailure:  nil,
+                         after: nil)
+        
+        let tagsResult = await tagManager.listFromTeams()
+        switch tagsResult {
+        case .success(let tags):
+            self.ticketTags = tags
+        case .failure(let error):
+            print(error)
+            self.alertContext.presentError(error: error)
         }
         
+        let statusResult = await statusManager.listFromTeams()
+        switch statusResult {
+        case .success(let statuses):
+            self.ticketStatus = statuses
+        case .failure(let error):
+            print(error)
+            self.alertContext.presentError(error: error)
+        }
     }
+}
+
+func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
+    Binding(
+        get: { lhs.wrappedValue ?? rhs },
+        set: { lhs.wrappedValue = $0 }
+    )
 }

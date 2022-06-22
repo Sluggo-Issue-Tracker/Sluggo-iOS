@@ -135,7 +135,7 @@ struct FilterView : View {
     
     @Sendable func doLoad() async {
         let tagManager = TagManager(identity: self.identity)
-        let statusManger = StatusManager(identity: self.identity)
+        let statusManager = StatusManager(identity: self.identity)
         let memberManager = MemberManager(identity: self.identity)
         
         let tagsResult = await tagManager.listFromTeams()
@@ -147,7 +147,7 @@ struct FilterView : View {
             self.alertContext.presentError(error: error)
         }
         
-        let statusResult = await statusManger.listFromTeams()
+        let statusResult = await statusManager.listFromTeams()
         switch statusResult {
         case .success(let statuses):
             self.ticketStatuses = statuses
