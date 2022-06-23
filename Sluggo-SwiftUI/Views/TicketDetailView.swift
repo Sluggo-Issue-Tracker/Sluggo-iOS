@@ -70,33 +70,40 @@ struct TicketEditDetail: View {
     
     @State var ticket: TicketRecord
     @Binding var showModalView: Bool
-    
-    @State var teamMembers: [MemberRecord] = []
-    @State var ticketStatus: [StatusRecord] = []
+
+    @State var ticketTitle: String = ""
+    @State var ticketUser: MemberRecord?
+    @State var ticketStatus: StatusRecord?
     @State var ticketTags: [TagRecord] = []
+    @State var ticketDueDate: Date?
+    @State var ticketDescription: String?
+
+    @State var teamMembers: [MemberRecord] = []
+    @State var ticketStatuses: [StatusRecord] = []
+    @State var ticketAllTags: [TagRecord] = []
     
     var body: some View {
         NavigationView {
             List {
                 Section(header: Text("Title")) {
-                    TextField("Required", text: $ticket.title)
+                    TextField("Required", text: $ticketTitle)
                 }
                 Section(header: Text("Assigned User")) {
-                    Picker("\(ticket.assignedUser?.getTitle() ?? "")", selection: $ticket.assignedUser, content: {
+                    Picker("\(ticketUser?.getTitle() ?? "")", selection: $ticketUser, content: {
                         ForEach(teamMembers) { member in
                             Text(member.owner.username)
                         }
                     })
                 }
                 Section(header: Text("Status")) {
-                    Text("\(ticket.status?.getTitle() ?? "")")
+                    Text("\(ticketStatus?.getTitle() ?? "")")
                 }
                 Section(header: Text("Tags")) {
-                    if(ticket.tagList.isEmpty) {
+                    if(ticketTags.isEmpty) {
                         Text("")
                     }
                     else {
-                        ForEach(ticket.tagList) { tag in
+                        ForEach(ticketTags) { tag in
                             Text(tag.title)
                         }
                     }
@@ -110,7 +117,7 @@ struct TicketEditDetail: View {
                     }
                 }
                 Section(header: Text("Description")) {
-                    TextEditor(text: $ticket.description ?? "")
+                    TextEditor(text: $ticketDescription ?? "")
                         .frame(minHeight: 100, alignment: .topLeading)
                 }
             }
@@ -139,6 +146,12 @@ struct TicketEditDetail: View {
 //                self.alertContext.presentError(error: error)
 //        }
         
+        self.ticketTitle = ticket.title
+        self.ticketUser = ticket.assignedUser
+        self.ticketStatus = ticket.status
+        self.ticketTags = ticket.tagList
+        self.ticketDescription = ticket.description
+        
         let memberManager = MemberManager(identity: self.identity)
         let statusManager = StatusManager(identity: self.identity)
         let tagManager = TagManager(identity: self.identity)
@@ -154,7 +167,7 @@ struct TicketEditDetail: View {
         let tagsResult = await tagManager.listFromTeams()
         switch tagsResult {
         case .success(let tags):
-            self.ticketTags = tags
+            self.ticketAllTags = tags
         case .failure(let error):
             print(error)
             self.alertContext.presentError(error: error)
@@ -163,7 +176,7 @@ struct TicketEditDetail: View {
         let statusResult = await statusManager.listFromTeams()
         switch statusResult {
         case .success(let statuses):
-            self.ticketStatus = statuses
+            self.ticketStatuses = statuses
         case .failure(let error):
             print(error)
             self.alertContext.presentError(error: error)
