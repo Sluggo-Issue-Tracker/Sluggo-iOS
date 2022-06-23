@@ -56,7 +56,7 @@ struct TicketDetail: View {
             self.showModalView.toggle()
         })
         .fullScreenCover(isPresented: $showModalView) {
-            TicketEditDetail(ticket: ticket, showModalView: self.$showModalView)
+            TicketEditDetail(ticket: $ticket, tempTicket: ticket, showModalView: self.$showModalView)
                 .transition(.opacity) //Doesn't work
         }
         
@@ -68,19 +68,56 @@ struct TicketEditDetail: View {
     @EnvironmentObject var identity: AppIdentity
     @StateObject var alertContext = AlertContext()
     
-    @State var ticket: TicketRecord
+    @Binding var ticket: TicketRecord
+    @State var tempTicket: TicketRecord?
     @Binding var showModalView: Bool
 
-    @State var ticketTitle: String = ""
-    @State var ticketUser: MemberRecord?
-    @State var ticketStatus: StatusRecord?
-    @State var ticketTags: [TagRecord] = []
-    @State var ticketDueDate: Date?
-    @State var ticketDescription: String?
+    @State private var ticketTitle: String = ""
+    @State private var ticketUser: MemberRecord?
+    @State private var ticketStatus: StatusRecord?
+    @State private var ticketTags: [TagRecord] = []
+    @State private var ticketDueDate: Date?
+    @State private var ticketDescription: String?
 
-    @State var teamMembers: [MemberRecord] = []
-    @State var ticketStatuses: [StatusRecord] = []
-    @State var ticketAllTags: [TagRecord] = []
+    @State private var teamMembers: [MemberRecord] = []
+    @State private var ticketStatuses: [StatusRecord] = []
+    @State private var ticketAllTags: [TagRecord] = []
+    
+//    init(ticket: Binding<TicketRecord>, ticketTemp: TicketRecord, showModalView: Binding<Bool>) {
+//        self._ticket = ticket
+//        self._showModalView = showModalView
+//
+//
+//        self.ticketTemp = TicketRecord(id: self.ticket.id,
+//                             ticketNumber: self.ticket.ticketNumber,
+//                                  tagList: self.ticket.tagList,
+//                               objectUuid: self.ticket.objectUuid,
+//                             assignedUser: self.ticket.assignedUser,
+//                                   status: self.ticket.status,
+//                                    title: self.ticket.title,
+//                              description: self.ticket.description,
+//                                  dueDate: self.ticket.dueDate,
+//                                  created: self.ticket.created,
+//                                activated: self.ticket.activated,
+//                              deactivated: self.ticket.deactivated)
+//
+//        self.ticketTemp = self.ticket
+//
+//        self.ticketTitle = self.ticket.title
+//        self.ticketUser = self.ticket.assignedUser
+//        self.ticketStatus = self.ticket.status
+//        self.ticketTags = self.ticket.tagList
+//        self.ticketDueDate = self.ticket.dueDate
+//        self.ticketDescription = self.ticket.description
+//
+//    }
+//
+//    init(ticket: Binding<TicketRecord>, showModalView: Binding<Bool>) {
+//        let tempTicket = ticket
+//
+//        self.init(ticket: ticket, ticketTemp: tempTicket, showModalView: showModalView)
+//
+//    }
     
     var body: some View {
         NavigationView {
@@ -127,30 +164,41 @@ struct TicketEditDetail: View {
                     self.showModalView.toggle()
                     
                 }, trailing: Button("Done") {
-                    
-                })
+                    self.updateTicket()
+                    self.showModalView.toggle()
+                }
+                )
             .task(doLoad)
         }
     }
     
-    @Sendable func doLoad() async{
-//        let ticketManager = TicketManager(identity: self.identity)
-//
-//        let ticketResult = await ticketManager.updateTicket(ticket: ticket)
-//
-//        switch ticketResult {
-//            case .success(let ticket):
-//                self.ticket = ticket
-//            case .failure(let error):
-//                print(error)
-//                self.alertContext.presentError(error: error)
-//        }
+    private func updateTicket() {
         
-        self.ticketTitle = ticket.title
-        self.ticketUser = ticket.assignedUser
-        self.ticketStatus = ticket.status
-        self.ticketTags = ticket.tagList
-        self.ticketDescription = ticket.description
+        // Update locally
+        
+        Task.init(priority: .userInitiated) {
+            await self.doUpdate()
+        }
+        
+    }
+    
+    @Sendable func doUpdate() async {
+        let ticketManager = TicketManager(identity: self.identity)
+
+        let ticketResult = await ticketManager.updateTicket(ticket: ticket)
+
+        switch ticketResult {
+            case .success(let ticket):
+                self.ticket = ticket
+            case .failure(let error):
+                print(error)
+                self.alertContext.presentError(error: error)
+        }
+    }
+    
+    @Sendable func doLoad() async {
+        
+        
         
         let memberManager = MemberManager(identity: self.identity)
         let statusManager = StatusManager(identity: self.identity)
