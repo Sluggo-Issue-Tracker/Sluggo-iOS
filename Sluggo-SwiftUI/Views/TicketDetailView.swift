@@ -56,7 +56,7 @@ struct TicketDetail: View {
             self.showModalView.toggle()
         })
         .fullScreenCover(isPresented: $showModalView) {
-            TicketEditDetail(ticket: $ticket, tempTicket: ticket, showModalView: self.$showModalView)
+            TicketEditDetail(ticket: $ticket, showModalView: self.$showModalView)
                 .transition(.opacity) //Doesn't work
         }
         
@@ -69,7 +69,6 @@ struct TicketEditDetail: View {
     @StateObject var alertContext = AlertContext()
     
     @Binding var ticket: TicketRecord
-    @State var tempTicket: TicketRecord?
     @Binding var showModalView: Bool
 
     @State private var ticketTitle: String = ""
@@ -83,11 +82,11 @@ struct TicketEditDetail: View {
     @State private var ticketStatuses: [StatusRecord] = []
     @State private var ticketAllTags: [TagRecord] = []
     
-//    init(ticket: Binding<TicketRecord>, ticketTemp: TicketRecord, showModalView: Binding<Bool>) {
-//        self._ticket = ticket
-//        self._showModalView = showModalView
-//
-//
+    init(ticket: Binding<TicketRecord>, showModalView: Binding<Bool>) {
+        self._ticket = ticket
+        self._showModalView = showModalView
+
+
 //        self.ticketTemp = TicketRecord(id: self.ticket.id,
 //                             ticketNumber: self.ticket.ticketNumber,
 //                                  tagList: self.ticket.tagList,
@@ -102,22 +101,17 @@ struct TicketEditDetail: View {
 //                              deactivated: self.ticket.deactivated)
 //
 //        self.ticketTemp = self.ticket
-//
-//        self.ticketTitle = self.ticket.title
-//        self.ticketUser = self.ticket.assignedUser
-//        self.ticketStatus = self.ticket.status
-//        self.ticketTags = self.ticket.tagList
-//        self.ticketDueDate = self.ticket.dueDate
-//        self.ticketDescription = self.ticket.description
-//
-//    }
-//
-//    init(ticket: Binding<TicketRecord>, showModalView: Binding<Bool>) {
-//        let tempTicket = ticket
-//
-//        self.init(ticket: ticket, ticketTemp: tempTicket, showModalView: showModalView)
-//
-//    }
+
+        self._ticketTitle = State(initialValue: self.ticket.title)
+        self._ticketUser = State(initialValue: self.ticket.assignedUser)
+        self._ticketStatus = State(initialValue: self.ticket.status)
+        self._ticketTags = State(initialValue: self.ticket.tagList)
+        self._ticketDueDate = State(initialValue: self.ticket.dueDate)
+        self._ticketDescription = State(initialValue: self.ticket.description)
+        
+        print(self.ticketTitle, self.ticket.title)
+
+    }
     
     var body: some View {
         NavigationView {
@@ -146,11 +140,11 @@ struct TicketEditDetail: View {
                     }
                 }
                 Section(header: Text("Date Due")) {
-                    if(ticket.dueDate == nil) {
+                    if(ticketDueDate == nil) {
                         Text("")
                     }
                     else {
-                        Text(ticket.dueDate ?? Date(), style: .date)
+                        Text(ticketDueDate ?? Date(), style: .date)
                     }
                 }
                 Section(header: Text("Description")) {
@@ -184,8 +178,21 @@ struct TicketEditDetail: View {
     
     @Sendable func doUpdate() async {
         let ticketManager = TicketManager(identity: self.identity)
+        
+       let tempTicket = TicketRecord(id: self.ticket.id,
+                          ticketNumber: self.ticket.ticketNumber,
+                               tagList: self.ticketTags,
+                            objectUuid: self.ticket.objectUuid,
+                          assignedUser: self.ticketUser,
+                                status: self.ticketStatus,
+                                 title: self.ticketTitle,
+                           description: self.ticketDescription,
+                               dueDate: self.ticketDueDate,
+                               created: self.ticket.created,
+                             activated: self.ticket.activated,
+                           deactivated: self.ticket.deactivated)
 
-        let ticketResult = await ticketManager.updateTicket(ticket: ticket)
+        let ticketResult = await ticketManager.updateTicket(ticket: tempTicket)
 
         switch ticketResult {
             case .success(let ticket):
