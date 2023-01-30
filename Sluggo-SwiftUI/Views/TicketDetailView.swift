@@ -17,7 +17,7 @@ struct TicketDetail: View {
 
         List {
             Section(header: Text("Title")) {
-                TextField("Required", text: $ticket.title)
+                Text("\(ticket.title)")
             }
             Section(header: Text("Assigned User")) {
                 Text("\(ticket.assignedUser?.getTitle() ?? "")")
@@ -86,30 +86,12 @@ struct TicketEditDetail: View {
         self._ticket = ticket
         self._showModalView = showModalView
 
-
-//        self.ticketTemp = TicketRecord(id: self.ticket.id,
-//                             ticketNumber: self.ticket.ticketNumber,
-//                                  tagList: self.ticket.tagList,
-//                               objectUuid: self.ticket.objectUuid,
-//                             assignedUser: self.ticket.assignedUser,
-//                                   status: self.ticket.status,
-//                                    title: self.ticket.title,
-//                              description: self.ticket.description,
-//                                  dueDate: self.ticket.dueDate,
-//                                  created: self.ticket.created,
-//                                activated: self.ticket.activated,
-//                              deactivated: self.ticket.deactivated)
-//
-//        self.ticketTemp = self.ticket
-
         self._ticketTitle = State(initialValue: self.ticket.title)
         self._ticketUser = State(initialValue: self.ticket.assignedUser)
         self._ticketStatus = State(initialValue: self.ticket.status)
         self._ticketTags = State(initialValue: self.ticket.tagList)
         self._ticketDueDate = State(initialValue: self.ticket.dueDate)
         self._ticketDescription = State(initialValue: self.ticket.description)
-        
-        print(self.ticketTitle, self.ticket.title)
 
     }
     
@@ -120,11 +102,14 @@ struct TicketEditDetail: View {
                     TextField("Required", text: $ticketTitle)
                 }
                 Section(header: Text("Assigned User")) {
-                    Picker("\(ticketUser?.getTitle() ?? "")", selection: $ticketUser, content: {
-                        ForEach(teamMembers) { member in
-                            Text(member.owner.username)
+                    Picker("Assigned User", selection: $ticketUser) {
+                        Text("None").tag(Optional<MemberRecord>(nil))
+                        ForEach(teamMembers, id: \.self) { member in
+                            Text(member.owner.username).tag(Optional(member))
                         }
-                    })
+                            
+                    }
+                    .pickerStyle(.menu)
                 }
                 Section(header: Text("Status")) {
                     Text("\(ticketStatus?.getTitle() ?? "")")
@@ -140,12 +125,7 @@ struct TicketEditDetail: View {
                     }
                 }
                 Section(header: Text("Date Due")) {
-                    if(ticketDueDate == nil) {
-                        Text("")
-                    }
-                    else {
-                        Text(ticketDueDate ?? Date(), style: .date)
-                    }
+                    Text(ticketDueDate ?? Date(), style: .date)
                 }
                 Section(header: Text("Description")) {
                     TextEditor(text: $ticketDescription ?? "")
@@ -158,22 +138,14 @@ struct TicketEditDetail: View {
                     self.showModalView.toggle()
                     
                 }, trailing: Button("Done") {
-                    self.updateTicket()
+                    Task.init(priority: .userInitiated) {
+                        await self.doUpdate()
+                    }
                     self.showModalView.toggle()
                 }
                 )
             .task(doLoad)
         }
-    }
-    
-    private func updateTicket() {
-        
-        // Update locally
-        
-        Task.init(priority: .userInitiated) {
-            await self.doUpdate()
-        }
-        
     }
     
     @Sendable func doUpdate() async {
