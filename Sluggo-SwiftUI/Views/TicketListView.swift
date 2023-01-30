@@ -106,7 +106,7 @@ struct FilterView : View {
     var body: some View {
         List {
             Section("Assigned User") {
-                if(ticketTags.isEmpty) {
+                if(teamMembers.isEmpty) {
                     Text("None").foregroundColor(.gray)
                     
                 }
@@ -133,10 +133,16 @@ struct FilterView : View {
                 }
             }
             Section("Statuses") {
-                SingleSelectionList (items: ticketStatuses, didChange:$filter.didChange, selection:$filter.ticketStatus) { item in
-                    HStack {
-                        Text(item.getTitle())
-                        Spacer()
+                if(ticketStatuses.isEmpty) {
+                    Text("None").foregroundColor(.gray)
+                    
+                }
+                else {
+                    SingleSelectionList (items: ticketStatuses, didChange:$filter.didChange, selection:$filter.ticketStatus) { item in
+                        HStack {
+                            Text(item.getTitle())
+                            Spacer()
+                        }
                     }
                 }
             }
