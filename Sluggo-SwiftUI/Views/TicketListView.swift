@@ -106,18 +106,29 @@ struct FilterView : View {
     var body: some View {
         List {
             Section("Assigned User") {
-                SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser) { item in
-                    HStack {
-                        Text(item.getTitle())
-                        Spacer()
+                if(ticketTags.isEmpty) {
+                    Text("None").foregroundColor(.gray)
+                    
+                }
+                else {
+                    SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser) { item in
+                        HStack {
+                            Text(item.getTitle())
+                            Spacer()
+                        }
                     }
                 }
             }
             Section("Tags") {
-                SingleSelectionList (items: ticketTags, didChange:$filter.didChange, selection:$filter.ticketTag) { item in
-                    HStack {
-                        Text(item.getTitle())
-                        Spacer()
+                if(ticketTags.isEmpty) {
+                    Text("None").foregroundColor(.gray)
+                }
+                else {
+                    SingleSelectionList (items: ticketTags, didChange:$filter.didChange, selection:$filter.ticketTag) { item in
+                        HStack {
+                            Text(item.getTitle())
+                            Spacer()
+                        }
                     }
                 }
             }
