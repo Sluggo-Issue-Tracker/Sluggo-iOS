@@ -20,24 +20,22 @@ struct TicketDetail: View {
                 Text("\(ticket.title)")
             }
             Section(header: Text("Assigned User")) {
-                Text("\(ticket.assignedUser?.getTitle() ?? "")")
+                NilContext(item: ticket.assignedUser) {
+                    Text("\(ticket.assignedUser?.getTitle() ?? "")")
+                }
             }
             Section(header: Text("Status")) {
+                
                 Text("\(ticket.status?.getTitle() ?? "")")
             }
             Section(header: Text("Tags")) {
-                if(ticket.tagList.isEmpty) {
-                    Text("")
-                }
-                else {
-                    ForEach(ticket.tagList) { tag in
-                        Text(tag.title)
-                    }
+                NilContext(item: ticket.tagList) {
+                    Text("Hello")
                 }
             }
             Section(header: Text("Date Due")) {
                 if(ticket.dueDate == nil) {
-                    Text("")
+                    Text("None").foregroundColor(.gray)
                 }
                 else {
                     Text(ticket.dueDate ?? Date(), style: .date)
@@ -57,8 +55,9 @@ struct TicketDetail: View {
         })
         .fullScreenCover(isPresented: $showModalView) {
             TicketEditDetail(ticket: $ticket, showModalView: self.$showModalView)
-                .transition(.opacity) //Doesn't work
+                
         }
+        .transition(.opacity) //Doesn't work
         
     }
 }

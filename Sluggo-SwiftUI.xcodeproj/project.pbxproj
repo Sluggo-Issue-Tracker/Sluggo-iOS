@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		050E25A628610A1300AD6586 /* TicketDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 050E25A528610A1300AD6586 /* TicketDetailView.swift */; };
+		0598E4B12989AC2F0020F12F /* NilContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0598E4B02989AC2F0020F12F /* NilContext.swift */; };
 		2F144B2228594CD4009B9C32 /* TicketListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F144B2128594CD4009B9C32 /* TicketListViewModel.swift */; };
 		2F2E6BFA2693B99C00968B3A /* Sluggo_SwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */; };
 		2F2E6BFC2693B99C00968B3A /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6BFB2693B99C00968B3A /* LaunchView.swift */; };
@@ -80,6 +81,7 @@
 
 /* Begin PBXFileReference section */
 		050E25A528610A1300AD6586 /* TicketDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketDetailView.swift; sourceTree = "<group>"; };
+		0598E4B02989AC2F0020F12F /* NilContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NilContext.swift; sourceTree = "<group>"; };
 		2F144B2128594CD4009B9C32 /* TicketListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketListViewModel.swift; sourceTree = "<group>"; };
 		2F2E6BF62693B99C00968B3A /* Sluggo-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sluggo-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sluggo_SwiftUIApp.swift; sourceTree = "<group>"; };
@@ -298,6 +300,7 @@
 				2F397DF126E2E6B100E6BE1A /* IconSluggo.swift */,
 				2FA5E70A2782891700BE0C29 /* TicketPill.swift */,
 				2F54AFFD285B20DD00568913 /* ErrorPage.swift */,
+				0598E4B02989AC2F0020F12F /* NilContext.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -459,6 +462,7 @@
 				2F2E6C4D2693BA0200968B3A /* StatusRecord.swift in Sources */,
 				2F2E6C5A2693BA0300968B3A /* StatusManager.swift in Sources */,
 				2F397DF026E2E48500E6BE1A /* LoginTextField.swift in Sources */,
+				0598E4B12989AC2F0020F12F /* NilContext.swift in Sources */,
 				2F2E6C452693BA0200968B3A /* TicketRecord.swift in Sources */,
 				2F144B2228594CD4009B9C32 /* TicketListViewModel.swift in Sources */,
 				2F2E6C4B2693BA0200968B3A /* PaginatedList.swift in Sources */,
