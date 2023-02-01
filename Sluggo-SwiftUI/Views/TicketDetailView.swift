@@ -20,7 +20,10 @@ struct TicketDetail: View {
                 Text("\(ticket.title)")
             }
             Section(header: Text("Assigned User")) {
-                NilContext(item: ticket.assignedUser) {
+                if(ticket.assignedUser == nil) {
+                    Text("None").foregroundColor(.gray)
+                }
+                else {
                     Text("\(ticket.assignedUser?.getTitle() ?? "")")
                 }
             }
@@ -29,8 +32,13 @@ struct TicketDetail: View {
                 Text("\(ticket.status?.getTitle() ?? "")")
             }
             Section(header: Text("Tags")) {
-                NilContext(item: ticket.tagList) {
-                    Text("Hello")
+                if(ticket.tagList.isEmpty) {
+                    Text("None").foregroundColor(.gray)
+                }
+                else {
+                    ForEach(ticket.tagList) { tag in
+                        Text(tag.title)
+                    }
                 }
             }
             Section(header: Text("Date Due")) {
@@ -42,10 +50,15 @@ struct TicketDetail: View {
                 }
             }
             Section(header: Text("Description")) {
-                VStack(spacing: 0) {
-                    Spacer()
-                    Text("\(ticket.description ?? "")")
-                        .frame(minHeight: 100, alignment: .topLeading)
+                if(ticket.tagList.isEmpty) {
+                    Text("None").foregroundColor(.gray)
+                }
+                else {
+                    VStack(spacing: 0) {
+                        Spacer()
+                        Text("\(ticket.description ?? "")")
+                            .frame(minHeight: 100, alignment: .topLeading)
+                    }
                 }
             }
         }

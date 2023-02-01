@@ -8,40 +8,43 @@
 import Foundation
 import SwiftUI
 
-struct NilContext<Item, Element, Content: View>: View {
-    
-    var item: Item
-    
-    enum choose {
-        case option(Element?)
-        case arr([Element])
-    }
-    
-    @ViewBuilder var content: Content
-    
-    var body: some View {
 
-        if(check()) {
-            Text("None").foregroundColor(.gray)
-        }
-        else {
-            content
-        }
-        
-        
-    }
-    func check() -> Bool{
-        
-        switch item {
-        case let result where item: Optional:
-            return result == nil
-            
-        case let result where Item: Array:
-            return result.isEmpty
-            
-        default:
-            return true
-        }
-        
-    }
-}
+//struct NilContext<T, Content: View>: View {
+//    
+//    var item: T
+//    
+//    enum choose {
+//        case option(T?)
+//        case arr([T])
+//    }
+//    
+//    
+//    @ViewBuilder var content: Content
+//    
+//    var body: some View {
+//
+//        if(check()) {
+//            Text("None").foregroundColor(.gray)
+//        }
+//        else {
+//            content
+//        }
+//    }
+//    
+//    func check() -> Bool{
+//
+//        switch item {
+//        case choose.option(T):
+//            return result == nil
+//
+//        case choose.arr(let result):
+//            return result.isEmpty
+//
+//        default:
+//            print("here")
+//            return true
+//        }
+//    }
+//}
+
+
