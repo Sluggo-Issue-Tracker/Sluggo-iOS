@@ -10,7 +10,7 @@ import SwiftUI
 
 struct TicketDetail: View {
     
-    @State var ticket: TicketRecord
+    @Binding var ticket: TicketRecord
     @State var showModalView = false
     
     var body: some View {
@@ -50,7 +50,7 @@ struct TicketDetail: View {
                 }
             }
             Section(header: Text("Description")) {
-                if(ticket.tagList.isEmpty) {
+                if(ticket.description == nil) {
                     Text("None").foregroundColor(.gray)
                 }
                 else {
@@ -117,7 +117,7 @@ struct TicketEditDetail: View {
                     Picker("Assigned User", selection: $ticketUser) {
                         Text("None").tag(Optional<MemberRecord>(nil))
                         ForEach(teamMembers, id: \.self) { member in
-                            Text(member.owner.username).tag(Optional(member))
+                            Text(member.owner.username).tag(Optional<MemberRecord>(member))
                         }
                             
                     }
@@ -163,18 +163,18 @@ struct TicketEditDetail: View {
     @Sendable func doUpdate() async {
         let ticketManager = TicketManager(identity: self.identity)
         
-       let tempTicket = TicketRecord(id: self.ticket.id,
-                          ticketNumber: self.ticket.ticketNumber,
-                               tagList: self.ticketTags,
-                            objectUuid: self.ticket.objectUuid,
-                          assignedUser: self.ticketUser,
-                                status: self.ticketStatus,
-                                 title: self.ticketTitle,
-                           description: self.ticketDescription,
-                               dueDate: self.ticketDueDate,
-                               created: self.ticket.created,
-                             activated: self.ticket.activated,
-                           deactivated: self.ticket.deactivated)
+        let tempTicket = TicketRecord(id: self.ticket.id,
+                            ticketNumber: self.ticket.ticketNumber,
+                                 tagList: self.ticketTags,
+                              objectUuid: self.ticket.objectUuid,
+                            assignedUser: self.ticketUser,
+                                  status: self.ticketStatus,
+                                   title: self.ticketTitle,
+                             description: self.ticketDescription,
+                                 dueDate: self.ticketDueDate,
+                                 created: self.ticket.created,
+                               activated: self.ticket.activated,
+                             deactivated: self.ticket.deactivated)
 
         let ticketResult = await ticketManager.updateTicket(ticket: tempTicket)
 
@@ -188,8 +188,6 @@ struct TicketEditDetail: View {
     }
     
     @Sendable func doLoad() async {
-        
-        
         
         let memberManager = MemberManager(identity: self.identity)
         let statusManager = StatusManager(identity: self.identity)

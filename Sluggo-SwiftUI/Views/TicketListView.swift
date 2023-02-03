@@ -37,7 +37,7 @@ struct TicketListView: View {
                         }
                     }
                 case .success:
-                    TicketList(tickets: viewModel.searchedTickets) {
+                    TicketList(tickets: $viewModel.searchedTickets) {
                         Group {
                             if viewModel.hasMore {
                                 ProgressView()
@@ -187,14 +187,14 @@ struct FilterView : View {
 
 struct TicketList<Content:View>: View {
     //    Simple struct to account for all the fancy styling on lists and Zstack
-    var tickets: [TicketRecord]
+    @Binding var tickets: [TicketRecord]
     var loadMore: () -> Content
-    @State private var selected: TicketRecord?
+    @State var selected: TicketRecord?
     var body: some View {
         List {
-            ForEach(tickets) { ticket in
+            ForEach($tickets) { $ticket in
                 ZStack{
-                    NavigationLink(destination: TicketDetail(ticket: ticket), tag: ticket, selection: $selected) {
+                    NavigationLink(destination: TicketDetail(ticket: $ticket), tag: ticket, selection: $selected) {
                         EmptyView()
                     }
                     .hidden()
