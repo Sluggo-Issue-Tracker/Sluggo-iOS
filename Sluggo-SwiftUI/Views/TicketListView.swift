@@ -37,7 +37,7 @@ struct TicketListView: View {
                         }
                     }
                 case .success:
-                    TicketList(tickets: $viewModel.searchedTickets) {
+                    TicketList(tickets: $viewModel.ticketsList) {
                         Group {
                             if viewModel.hasMore {
                                 ProgressView()
@@ -198,7 +198,7 @@ struct TicketList<Content:View>: View {
                         EmptyView()
                     }
                     .hidden()
-                    TicketPill(ticket: ticket)
+                    TicketPill(ticket: $ticket)
                         .overlay(selected == ticket ? Color(white: 0.75, opacity: 0.25) : Color.clear)
                         .onTapGesture {
                             self.selected = ticket

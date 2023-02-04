@@ -38,7 +38,7 @@ extension Color {
 }
 
 struct TicketPill: View {
-    @State var ticket: TicketRecord
+    @Binding var ticket: TicketRecord
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 5) {
