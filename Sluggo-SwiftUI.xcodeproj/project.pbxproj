@@ -82,6 +82,7 @@
 
 /* Begin PBXFileReference section */
 		05083DB2298F0D9A000BEFFD /* TicketEditDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketEditDetail.swift; sourceTree = "<group>"; };
+		05083DB4299186F8000BEFFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		050E25A528610A1300AD6586 /* TicketDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketDetailView.swift; sourceTree = "<group>"; };
 		0598E4B02989AC2F0020F12F /* NilContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NilContext.swift; sourceTree = "<group>"; };
 		2F144B2128594CD4009B9C32 /* TicketListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketListViewModel.swift; sourceTree = "<group>"; };
@@ -196,6 +197,7 @@
 		2F2E6BF82693B99C00968B3A /* Sluggo-SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				05083DB4299186F8000BEFFD /* Info.plist */,
 				2F144B2028594B31009B9C32 /* ViewModels */,
 				2F8BF67626D9A87000B9A221 /* Views */,
 				2F2E6C212693BA0200968B3A /* Models */,
@@ -671,7 +673,7 @@
 				DEVELOPMENT_TEAM = JKXM8C9H4L;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = "Sluggo-SwiftUI/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -702,7 +704,7 @@
 				DEVELOPMENT_TEAM = JKXM8C9H4L;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_FILE = "Sluggo-SwiftUI/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
