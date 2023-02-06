@@ -20,12 +20,13 @@ struct TicketEditDetail: View {
     @State private var ticketUser: MemberRecord?
     @State private var ticketStatus: StatusRecord?
     @State private var ticketTags: [TagRecord] = []
-    @State private var ticketDueDate: Date?
+    @State private var ticketDueDate = Date()
     @State private var ticketDescription: String?
 
     @State private var teamMembers: [MemberRecord] = []
     @State private var ticketStatuses: [StatusRecord] = []
     @State private var ticketAllTags: [TagRecord] = []
+    @State private var dateToggle = false
     
     init(ticket: Binding<TicketRecord>, showView: Binding<Bool>) {
         
@@ -36,8 +37,10 @@ struct TicketEditDetail: View {
         self._ticketUser = State(initialValue: self.ticket.assignedUser)
         self._ticketStatus = State(initialValue: self.ticket.status)
         self._ticketTags = State(initialValue: self.ticket.tagList)
-        self._ticketDueDate = State(initialValue: self.ticket.dueDate)
+        self._dateToggle = State(initialValue: {self.ticket.dueDate != nil}())
+        self._ticketDueDate = State(initialValue: {self.ticket.dueDate ?? Date()}())
         self._ticketDescription = State(initialValue: self.ticket.description)
+
 
     }
     
@@ -71,7 +74,8 @@ struct TicketEditDetail: View {
                     }
                 }
                 Section(header: Text("Date Due")) {
-                    Text(ticketDueDate ?? Date(), style: .date)
+                    DatePicker(selection: $ticketDueDate,
+                               label: { Toggle("Date", isOn: $dateToggle).labelsHidden() })
                 }
                 Section(header: Text("Description")) {
                     TextEditor(text: $ticketDescription ?? "")
@@ -97,6 +101,8 @@ struct TicketEditDetail: View {
     @Sendable func doUpdate() async {
         let ticketManager = TicketManager(identity: self.identity)
         
+        print(dateToggle)
+        
         let tempTicket = TicketRecord(id: self.ticket.id,
                             ticketNumber: self.ticket.ticketNumber,
                                  tagList: self.ticketTags,
@@ -105,7 +111,7 @@ struct TicketEditDetail: View {
                                   status: self.ticketStatus,
                                    title: self.ticketTitle,
                              description: self.ticketDescription,
-                                 dueDate: self.ticketDueDate,
+                                 dueDate: { dateToggle ? self.ticketDueDate : nil}(),
                                  created: self.ticket.created,
                                activated: self.ticket.activated,
                              deactivated: self.ticket.deactivated)
