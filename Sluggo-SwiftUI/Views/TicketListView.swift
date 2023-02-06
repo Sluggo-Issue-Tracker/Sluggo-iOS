@@ -15,28 +15,9 @@ struct TicketListView: View {
     
     var body: some View {
         NavigationView {
-            Group {
-                switch viewModel.loadState {
-                case .loading:
-                    VStack {
-                        Text("Retrieving Tickets")
-                        ProgressView()
-                    }
-                case .failed:
-                    ErrorPage(message: "Failed to retrieve Tickets") {
-                        // When the user attempts to retry, immediately switch back to
-                        // the loading state.
-                        viewModel.loadState = .loading
-                        
-                        Task {
-                            // Important: wait 0.5 seconds before retrying the download, to
-                            // avoid jumping straight back to .failed in case there are
-                            // internet problems.
-                            try await Task.sleep(nanoseconds: 500_000_000)
-                            await viewModel.handleTicketsList(page: 1)
-                        }
-                    }
-                case .success:
+                AsyncContentView(source: viewModel,
+                                 loadingMessage: "Retrieving Tickets",
+                                 errorMessage: "Failed to retrieve Tickets") {
                     TicketList(tickets: viewModel.searchedTickets) {
                         Group {
                             if viewModel.hasMore {
@@ -59,14 +40,12 @@ struct TicketListView: View {
                     .searchable(text: $viewModel.searchKey)
                     .refreshable {
                         self.viewModel.showMessage = true
-                        await viewModel.handleTicketsList(page: 1)
+                        await viewModel.load()
                     }
-                    
                 }
-            }
             .task {
                 viewModel.setup(identity: identity, alertContext: alertContext)
-                await viewModel.handleTicketsList(page: 1)
+                await viewModel.load()
             }
             .toolbar {
                 Menu {

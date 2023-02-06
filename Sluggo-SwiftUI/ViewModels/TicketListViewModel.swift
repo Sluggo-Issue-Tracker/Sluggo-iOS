@@ -11,7 +11,10 @@ import SwiftUI
 
 extension TicketListView {
     
-    class ViewModel: ObservableObject {
+    class ViewModel: LoadableObject {
+        
+        @Published private(set) var loadState = LoadState.loading
+        
         var identity: AppIdentity?
         var alertContext: AlertContext?
         @Published var ticketsList: [TicketRecord] = []
@@ -19,7 +22,6 @@ extension TicketListView {
         @Published var selectedFilters: Set<String> = Set<String>()
         @Published var showFilter: Bool = false
         @Published var searchKey = ""
-        @Published var loadState = LoadState.loading
         @Published var showMessage = true
         @Published private var nextPageStr: String?
         
@@ -72,18 +74,6 @@ extension TicketListView {
             return Int(num) ?? 1
         }
         
-        /// The current state of our ticket download
-        enum LoadState {
-            /// The download is currently in progress. This is the default.
-            case loading
-            
-            /// The download has finished, and tickets can now be displayed.
-            case success
-            
-            /// The download failed.
-            case failed
-        }
-        
         var searchedTickets: [TicketRecord] {
             if searchKey.isEmpty {
                 return self.ticketsList
@@ -92,7 +82,12 @@ extension TicketListView {
             }
         }
         
+        @MainActor func load() async {
+            await self.handleTicketsList(page: 1)
+        }
+        
         @MainActor func handleTicketsList(page: Int) async {
+            
             let ticketManager = TicketManager(identity: self.identity!)
             let ticketsResult = await ticketManager.listTeamTickets(page: page, queryParams: self.filterParams)
             switch ticketsResult {
