@@ -11,7 +11,7 @@ import SwiftUI
 struct TicketDetail: View {
     
     @Binding var ticket: TicketRecord
-    @State var showModalView = false
+    @State var showView = false
     
     var body: some View {
 
@@ -54,23 +54,18 @@ struct TicketDetail: View {
                     Text("None").foregroundColor(.gray)
                 }
                 else {
-                    VStack(spacing: 0) {
-                        Spacer()
-                        Text("\(ticket.description ?? "")")
-                            .frame(minHeight: 100, alignment: .topLeading)
-                    }
+                    Text("\(ticket.description ?? "")")
+                        .frame(minHeight: 100, alignment: .topLeading)
                 }
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing: Button("Edit"){
-            self.showModalView.toggle()
+            self.showView.toggle()
         })
-        .fullScreenCover(isPresented: $showModalView) {
-            TicketEditDetail(ticket: $ticket, showModalView: self.$showModalView)
+        .fullScreenCover(isPresented: $showView) {
+            TicketEditDetail(ticket: $ticket, showView: self.$showView)
                 
         }
-        .transition(.opacity) //Doesn't work
-        
     }
 }

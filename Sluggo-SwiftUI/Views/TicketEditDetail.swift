@@ -14,7 +14,7 @@ struct TicketEditDetail: View {
     @StateObject var alertContext = AlertContext()
     
     @Binding var ticket: TicketRecord
-    @Binding var showModalView: Bool
+    @Binding var showView: Bool
 
     @State private var ticketTitle: String = ""
     @State private var ticketUser: MemberRecord?
@@ -27,10 +27,10 @@ struct TicketEditDetail: View {
     @State private var ticketStatuses: [StatusRecord] = []
     @State private var ticketAllTags: [TagRecord] = []
     
-    init(ticket: Binding<TicketRecord>, showModalView: Binding<Bool>) {
+    init(ticket: Binding<TicketRecord>, showView: Binding<Bool>) {
         
         self._ticket = ticket
-        self._showModalView = showModalView
+        self._showView = showView
 
         self._ticketTitle = State(initialValue: self.ticket.title)
         self._ticketUser = State(initialValue: self.ticket.assignedUser)
@@ -49,7 +49,7 @@ struct TicketEditDetail: View {
                 }
                 Section(header: Text("Assigned User")) {
                     Picker("Assigned User", selection: $ticketUser) {
-                        Text("None").tag(nil as MemberRecord?) // This line is causing a warning
+                        Text("None").tag(nil as MemberRecord?)
                         ForEach(teamMembers, id: \.self) { member in
                             Text(member.owner.username).tag(member as MemberRecord?)
                         }
@@ -81,13 +81,13 @@ struct TicketEditDetail: View {
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
                 leading: Button("Cancel") {
-                    self.showModalView.toggle()
+                    self.showView.toggle()
                     
                 }, trailing: Button("Done") {
                     Task.init(priority: .userInitiated) {
                         await self.doUpdate()
                     }
-                    self.showModalView.toggle()
+                    self.showView.toggle()
                 }
                 )
             .task(doLoad)
