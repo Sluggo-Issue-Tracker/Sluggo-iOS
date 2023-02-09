@@ -15,60 +15,60 @@ struct TicketListView: View {
     
     var body: some View {
         NavigationView {
-                AsyncContentView(source: viewModel,
-                                 loadingMessage: "Retrieving Tickets",
-                                 errorMessage: "Failed to retrieve Tickets") {
-                    TicketList(tickets: viewModel.searchedTickets) {
-                        Group {
-                            if viewModel.hasMore {
-                                ProgressView()
-                                    .task {
-                                        self.viewModel.showMessage = true
-                                        await self.viewModel.handleTicketsList(page: viewModel.nextPage)
-                                    }
-                            } else {
-                                if viewModel.showMessage {
-                                    Text("Congrats! No More Tickets")
-                                        .font(.headline)
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                        .onAppear(perform: viewModel.setDismissTimer)
+            AsyncContentView(source: viewModel,
+                             loadingMessage: "Retrieving Tickets",
+                             errorMessage: "Failed to retrieve Tickets") {
+                TicketList(tickets: viewModel.searchedTickets) {
+                    Group {
+                        if viewModel.hasMore {
+                            ProgressView()
+                                .task {
+                                    self.viewModel.showMessage = true
+                                    await self.viewModel.handleTicketsList(page: viewModel.nextPage)
                                 }
-                                
+                        } else {
+                            if viewModel.showMessage {
+                                Text("Congrats! No More Tickets")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .onAppear(perform: viewModel.setDismissTimer)
                             }
+                            
                         }
                     }
-                    .searchable(text: $viewModel.searchKey)
-                    .refreshable {
-                        self.viewModel.showMessage = true
-                        await viewModel.load()
-                    }
                 }
-            .task {
-                viewModel.setup(identity: identity, alertContext: alertContext)
-                await viewModel.load()
-            }
-            .toolbar {
-                Menu {
-                    Button {} label: {Label("Create New", systemImage: "plus")}
-                    Button {viewModel.showFilter.toggle()} label: {Label("Filter", systemImage: "folder")}
-                } label: {
-                    Image(systemName: "ellipsis")
+                .searchable(text: $viewModel.searchKey)
+                .refreshable {
+                    self.viewModel.showMessage = true
+                    await viewModel.load()
                 }
             }
-            .sheet(isPresented: $viewModel.showFilter, onDismiss: viewModel.onFilter) {
-                NavigationView {
-                    FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
-                        .navigationTitle("Filter")
-                        .toolbar {
-                            ToolbarItem {
-                                Button("Done") {
-                                    viewModel.showFilter.toggle()
-                                }
-                            }
-                        }
-                }
-            }
-            .navigationTitle("Tickets")
+         .task {
+             viewModel.setup(identity: identity, alertContext: alertContext)
+             await viewModel.load()
+         }
+         .toolbar {
+             Menu {
+                 Button {} label: {Label("Create New", systemImage: "plus")}
+                 Button {viewModel.showFilter.toggle()} label: {Label("Filter", systemImage: "folder")}
+             } label: {
+                 Image(systemName: "ellipsis")
+             }
+         }
+         .sheet(isPresented: $viewModel.showFilter, onDismiss: viewModel.onFilter) {
+             NavigationView {
+                 FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
+                     .navigationTitle("Filter")
+                     .toolbar {
+                         ToolbarItem {
+                             Button("Done") {
+                                 viewModel.showFilter.toggle()
+                             }
+                         }
+                     }
+             }
+         }
+         .navigationTitle("Tickets")
         }
         .navigationViewStyle(.stack)
         .alert(context: alertContext)
@@ -117,8 +117,7 @@ struct FilterView : View {
         let statusManger = StatusManager(identity: self.identity)
         let memberManager = MemberManager(identity: self.identity)
         
-        let tagsResult = await tagManager.listFromTeams()
-        switch tagsResult {
+        switch await tagManager.listFromTeams() {
         case .success(let tags):
             self.ticketTags = tags
         case .failure(let error):
@@ -126,8 +125,7 @@ struct FilterView : View {
             self.alertContext.presentError(error: error)
         }
         
-        let statusResult = await statusManger.listFromTeams()
-        switch statusResult {
+        switch await statusManger.listFromTeams() {
         case .success(let statuses):
             self.ticketStatuses = statuses
         case .failure(let error):

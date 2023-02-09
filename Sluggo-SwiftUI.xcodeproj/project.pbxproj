@@ -60,6 +60,7 @@
 		2FDC3F2926DDB1CF0020A36D /* TeamsChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDC3F2826DDB1CE0020A36D /* TeamsChoiceView.swift */; };
 		2FE1B6BE269EBB0300667E95 /* CanNetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1B6BD269EBB0300667E95 /* CanNetworkRequest.swift */; };
 		2FE1B6C0269EBBE100667E95 /* BaseLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */; };
+		2FE2E9ED2994BC0A00AE8673 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE2E9EC2994BC0A00AE8673 /* LoginViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +136,7 @@
 		2FDC3F2826DDB1CE0020A36D /* TeamsChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TeamsChoiceView.swift; sourceTree = "<group>"; };
 		2FE1B6BD269EBB0300667E95 /* CanNetworkRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CanNetworkRequest.swift; sourceTree = "<group>"; };
 		2FE1B6BF269EBBE100667E95 /* BaseLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLoader.swift; sourceTree = "<group>"; };
+		2FE2E9EC2994BC0A00AE8673 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -167,6 +169,7 @@
 			isa = PBXGroup;
 			children = (
 				2F144B2128594CD4009B9C32 /* TicketListViewModel.swift */,
+				2FE2E9EC2994BC0A00AE8673 /* LoginViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -308,16 +311,24 @@
 		2F8BF67626D9A87000B9A221 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				2FE2E9EE2994C03600AE8673 /* Generic Views */,
 				2F397DEC26E2E42E00E6BE1A /* Components */,
 				2F2E6BFB2693B99C00968B3A /* LaunchView.swift */,
 				2F8BF67726D9AEBB00B9A221 /* LoginView.swift */,
 				2FDC3F2826DDB1CE0020A36D /* TeamsChoiceView.swift */,
 				2FCFE8CD2705309C00734E80 /* HomeView.swift */,
 				2FA5E70C27828D3800BE0C29 /* TicketListView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		2FE2E9EE2994C03600AE8673 /* Generic Views */ = {
+			isa = PBXGroup;
+			children = (
 				2F54AFFB285B152900568913 /* SingleSelectionList.swift */,
 				2F5CC2402990DBEE00F563E0 /* AsyncContentView.swift */,
 			);
-			path = Views;
+			path = "Generic Views";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -476,6 +487,7 @@
 				2FE1B6BE269EBB0300667E95 /* CanNetworkRequest.swift in Sources */,
 				2F2E6C582693BA0300968B3A /* PinnedTicketManager.swift in Sources */,
 				2F54AFFE285B20DD00568913 /* ErrorPage.swift in Sources */,
+				2FE2E9ED2994BC0A00AE8673 /* LoginViewModel.swift in Sources */,
 				2F2E6C592693BA0300968B3A /* InviteManager.swift in Sources */,
 				2FDC3F2926DDB1CF0020A36D /* TeamsChoiceView.swift in Sources */,
 				2F2E6C4E2693BA0200968B3A /* ErrorMessage.swift in Sources */,
