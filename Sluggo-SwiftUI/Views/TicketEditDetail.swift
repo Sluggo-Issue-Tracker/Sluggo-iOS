@@ -21,12 +21,13 @@ struct TicketEditDetail: View {
     @State private var ticketStatus: StatusRecord?
     @State private var ticketTags: [TagRecord] = []
     @State private var ticketDueDate = Date()
+    @State private var dateToggle = false
     @State private var ticketDescription: String?
 
     @State private var teamMembers: [MemberRecord] = []
     @State private var ticketStatuses: [StatusRecord] = []
     @State private var ticketAllTags: [TagRecord] = []
-    @State private var dateToggle = false
+    @State private var action: Bool = false
     
     init(ticket: Binding<TicketRecord>, showView: Binding<Bool>) {
         
@@ -41,27 +42,74 @@ struct TicketEditDetail: View {
         self._ticketDueDate = State(initialValue: {self.ticket.dueDate ?? Date()}())
         self._ticketDescription = State(initialValue: self.ticket.description)
 
-
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
-                Section(header: Text("Title")) {
-                    TextField("Required", text: $ticketTitle)
+                Section {
+                    TextField("Title", text: $ticketTitle)
                 }
-                Section(header: Text("Assigned User")) {
-                    Picker("Assigned User", selection: $ticketUser) {
-                        Text("None").tag(nil as MemberRecord?)
-                        ForEach(teamMembers, id: \.self) { member in
-                            Text(member.owner.username).tag(member as MemberRecord?)
+                Section {
+                    HStack {
+                        Text("Assigned User")
+                        Spacer()
+                        Menu {
+                            Button("None") {
+                                ticketUser = nil
+                            }
+                            ForEach(teamMembers, id: \.self) { member in
+                                Button(member.owner.username) {
+                                    ticketUser = member
+                                }
+                            }
+                            Divider()
+                            NavigationLink() {
+                                PickerDetail(items: $teamMembers, selected: $ticketUser)
+                            }label: {
+                                Text("More")
+                            }
+                        } label: {
+                            HStack(spacing: 2) {
+                                Text("\(ticketUser?.owner.username ?? "None")")
+                                    .fixedSize()
+                                Image(systemName: "chevron.up.chevron.down")
+                            }
                         }
-                            
+                        
+                        
+                        .transaction { transaction in
+                            transaction.animation = nil
+                        }
                     }
-                    .pickerStyle(.menu)
+                    // PickerDetail(items: $teamMembers)
+//                    Picker("Assigned User", selection: $ticketUser) {
+//                        Text("None").tag(nil as MemberRecord?)
+//                        Divider()
+//                        ForEach(teamMembers, id: \.self) { member in
+//                            Text(member.owner.username).tag(member as MemberRecord?)
+//                        }
+//                        Divider()
+//                        Picker("More", selection: $ticketUser) {
+//                            Text("None").tag(nil as MemberRecord?)
+//                            ForEach(teamMembers, id: \.self) { moreMember in
+//                                Text(moreMember.owner.username).tag(moreMember as MemberRecord?)
+//                            }
+//
+//
+//                        }.tag(nil as MemberRecord?)
+//                        .pickerStyle(.navigationLink)
+//                    }
+//                    .pickerStyle(.menu)
                 }
-                Section(header: Text("Status")) {
-                    Text("\(ticketStatus?.getTitle() ?? "")")
+                Section() {
+                    Picker("Status", selection: $ticketStatus) {
+                        Text("None").tag(nil as StatusRecord?)
+                        Divider()
+                        ForEach(ticketStatuses, id: \.self) { status in
+                            Text(status.getTitle()).tag(status as StatusRecord?)
+                        }
+                    }
                 }
                 Section(header: Text("Tags")) {
                     if(self.ticketTags.isEmpty) {
@@ -75,7 +123,10 @@ struct TicketEditDetail: View {
                 }
                 Section(header: Text("Date Due")) {
                     DatePicker(selection: $ticketDueDate,
-                               label: { Toggle("Date", isOn: $dateToggle).labelsHidden() })
+                               label: {
+                        Toggle("Date", isOn: $dateToggle).labelsHidden()
+                        // Toggle throwing strange warning, bug Apple needs to fix
+                    })
                 }
                 Section(header: Text("Description")) {
                     TextEditor(text: $ticketDescription ?? "")
@@ -101,8 +152,6 @@ struct TicketEditDetail: View {
     @Sendable func doUpdate() async {
         let ticketManager = TicketManager(identity: self.identity)
         
-        print(dateToggle)
-        
         let tempTicket = TicketRecord(id: self.ticket.id,
                             ticketNumber: self.ticket.ticketNumber,
                                  tagList: self.ticketTags,
@@ -111,7 +160,7 @@ struct TicketEditDetail: View {
                                   status: self.ticketStatus,
                                    title: self.ticketTitle,
                              description: self.ticketDescription,
-                                 dueDate: { dateToggle ? self.ticketDueDate : nil}(),
+                                 dueDate: { dateToggle ? self.ticketDueDate : nil }(),
                                  created: self.ticket.created,
                                activated: self.ticket.activated,
                              deactivated: self.ticket.deactivated)
@@ -157,6 +206,27 @@ struct TicketEditDetail: View {
         case .failure(let error):
             print(error)
             self.alertContext.presentError(error: error)
+        }
+    }
+}
+
+struct PickerDetail<Item: Identifiable>: View {
+    
+    @Binding var items: [Item]
+    @Binding var selected: Item?
+    
+    var body: some View {
+            List {
+                ForEach($items) { $item in
+                    Button("None") {
+                        selected = nil
+                    }
+                    Button("Hello") {
+                        selected = item
+                    }
+                    
+                }
+
         }
     }
 }
