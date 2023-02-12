@@ -14,7 +14,7 @@ struct TicketListView: View {
     @StateObject private var viewModel = ViewModel()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Group {
                 switch viewModel.loadState {
                 case .loading:
@@ -211,7 +211,6 @@ struct TicketList<Content:View>: View {
             loadMore()
         }
         .listStyle(.plain)
-        
     }
 }
 

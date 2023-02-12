@@ -27,7 +27,7 @@ struct TicketEditDetail: View {
     @State private var teamMembers: [MemberRecord] = []
     @State private var ticketStatuses: [StatusRecord] = []
     @State private var ticketAllTags: [TagRecord] = []
-    @State private var action: Bool = false
+    @State private var multiSelection = Set<UUID>()
     
     init(ticket: Binding<TicketRecord>, showView: Binding<Bool>) {
         
@@ -54,33 +54,8 @@ struct TicketEditDetail: View {
                     HStack {
                         Text("Assigned User")
                         Spacer()
-                        Menu {
-                            Button("None") {
-                                ticketUser = nil
-                            }
-                            ForEach(teamMembers, id: \.self) { member in
-                                Button(member.owner.username) {
-                                    ticketUser = member
-                                }
-                            }
-                            Divider()
-                            NavigationLink() {
-                                PickerDetail(items: $teamMembers, selected: $ticketUser)
-                            }label: {
-                                Text("More")
-                            }
-                        } label: {
-                            HStack(spacing: 2) {
-                                Text("\(ticketUser?.owner.username ?? "None")")
-                                    .fixedSize()
-                                Image(systemName: "chevron.up.chevron.down")
-                            }
-                        }
-                        
-                        
-                        .transaction { transaction in
-                            transaction.animation = nil
-                        }
+                        ExtendedPicker(items: $teamMembers, selected: $ticketUser)
+                       
                     }
                     // PickerDetail(items: $teamMembers)
 //                    Picker("Assigned User", selection: $ticketUser) {
@@ -111,13 +86,18 @@ struct TicketEditDetail: View {
                         }
                     }
                 }
-                Section(header: Text("Tags")) {
-                    if(self.ticketTags.isEmpty) {
-                        Text("")
-                    }
-                    else {
-                        ForEach(ticketTags) { tag in
-                            Text(tag.title)
+                Section {
+                    HStack {
+                        Text("Assigned User")
+                        Spacer()
+                        Menu {
+                            ForEach(ticketAllTags) { tag in
+                                Button(tag.getTitle()) {
+                                    
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "plus.square")
                         }
                     }
                 }
@@ -128,11 +108,12 @@ struct TicketEditDetail: View {
                         // Toggle throwing strange warning, bug Apple needs to fix
                     })
                 }
-                Section(header: Text("Description")) {
+                Section() {
                     TextEditor(text: $ticketDescription ?? "")
                         .frame(minHeight: 100, alignment: .topLeading)
                 }
             }
+            .navigationBarTitle("Edit Ticket")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
                 leading: Button("Cancel") {
@@ -210,23 +191,57 @@ struct TicketEditDetail: View {
     }
 }
 
-struct PickerDetail<Item: Identifiable>: View {
+struct ExtendedPicker<Item: HasTitle & Identifiable & Hashable>: View {
     
     @Binding var items: [Item]
     @Binding var selected: Item?
     
     var body: some View {
-            List {
-                ForEach($items) { $item in
-                    Button("None") {
-                        selected = nil
-                    }
-                    Button("Hello") {
-                        selected = item
-                    }
-                    
+        Menu {
+            Button("None") {
+                selected = nil
+            }
+            ForEach(items, id: \.self) { item in
+                Button(item.getTitle()) {
+                    selected = item
                 }
+            }
+            Divider()
+            NavigationLink() {
+                PickerDetail(items: $items, selected: $selected)
+            } label: {
+                Text("More")
+            }
+        } label: {
+            HStack(spacing: 2) {
+                Text("\(selected?.getTitle() ?? "None")")
+                    .fixedSize()
+                Image(systemName: "chevron.up.chevron.down")
+            }
+        }
+        .transaction { transaction in
+            transaction.animation = nil
+        }
+    }
+}
 
+struct PickerDetail <Item: HasTitle & Identifiable & Hashable>: View {
+    
+    @Binding var items: [Item]
+    @Binding var selected: Item?
+    
+    var body: some View {
+        List {
+            Button("None") {
+                selected = nil
+            }
+            .foregroundColor(.black)
+            ForEach(items) { item in
+                Button(item.getTitle()) {
+                    selected = item
+                }
+                .foregroundColor(.black)
+            }
         }
     }
 }
