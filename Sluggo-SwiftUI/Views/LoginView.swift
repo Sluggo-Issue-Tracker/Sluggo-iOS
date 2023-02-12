@@ -20,7 +20,7 @@ struct LoginView: View {
     
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 IconSluggo()
                     .padding()
@@ -57,12 +57,12 @@ struct LoginView: View {
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
                 }
-                
-                NavigationLink(destination: TeamsChoiceView(showLogin: $showModal), isActive: $viewModel.showTeamsModal) {
-                    EmptyView()
-                }
-                .hidden()
-                .onChange(of: self.viewModel.showTeamsModal, perform: self.viewModel.closeTeams)
+            }
+            .navigationDestination(isPresented: $viewModel.showTeamsModal){
+                TeamsChoiceView(showLogin: $showModal)
+            }
+            .onChange(of: self.viewModel.showTeamsModal) {
+                self.viewModel.closeTeams(isShowing: $0)
             }
             .alert(context: alertContext)
             .navigationBarHidden(true)

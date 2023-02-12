@@ -29,7 +29,7 @@ extension LoginView {
             self.identity = identity
             self.alertContext = alertContext
         }
-        
+        @MainActor
         func closeTeams(isShowing: Bool) -> Void {
             if !isShowing && self.identity!.team == nil {
                 let userManager = UserManager(identity: identity!)

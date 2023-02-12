@@ -14,11 +14,11 @@ struct TicketListView: View {
     @StateObject private var viewModel = ViewModel()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             AsyncContentView(source: viewModel,
                              loadingMessage: "Retrieving Tickets",
                              errorMessage: "Failed to retrieve Tickets") {
-                TicketList(tickets: viewModel.searchedTickets) {
+                TicketList(tickets: $viewModel.searchedTickets) {
                     Group {
                         if viewModel.hasMore {
                             ProgressView()
@@ -38,6 +38,7 @@ struct TicketListView: View {
                     }
                 }
                 .searchable(text: $viewModel.searchKey)
+                .onChange(of: viewModel.searchKey, perform: viewModel.updateSearch)
                 .refreshable {
                     self.viewModel.showMessage = true
                     await viewModel.load()
@@ -70,7 +71,6 @@ struct TicketListView: View {
          }
          .navigationTitle("Tickets")
         }
-        .navigationViewStyle(.stack)
         .alert(context: alertContext)
     }
 }
@@ -147,30 +147,26 @@ struct FilterView : View {
 
 struct TicketList<Content:View>: View {
     //    Simple struct to account for all the fancy styling on lists and Zstack
-    var tickets: [TicketRecord]
+    @Binding var tickets: [TicketRecord]
     var loadMore: () -> Content
-    @State private var selected: TicketRecord?
     var body: some View {
-        List {
-            ForEach(tickets) { ticket in
-                ZStack{
-                    NavigationLink(destination: Text(ticket.title), tag: ticket, selection: $selected) {
-                        EmptyView()
-                    }
-                    .hidden()
-                    TicketPill(ticket: ticket)
-                        .overlay(selected == ticket ? Color(white: 0.75, opacity: 0.25) : Color.clear)
-                        .onTapGesture {
-                            self.selected = ticket
-                        }
+        List(tickets, id: \.self) { ticket in
+            ZStack {
+                NavigationLink(value: ticket) {
+                    EmptyView()
                 }
+                TicketPill(ticket: ticket)
             }
             .listRowSeparator(.hidden)
             .listRowInsets(.none)
-            .listRowBackground(Color.clear)
-            loadMore()
+//            .listRowBackground(Color.clear) // If we set it to clear we can't have the pill change color
+            
+        }
+        .navigationDestination(for: TicketRecord.self) { ticket in
+            Text(ticket.title)
         }
         .listStyle(.plain)
+        loadMore()
         
     }
 }

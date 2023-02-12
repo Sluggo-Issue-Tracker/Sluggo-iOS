@@ -17,7 +17,8 @@ extension TicketListView {
         
         var identity: AppIdentity?
         var alertContext: AlertContext?
-        @Published var ticketsList: [TicketRecord] = []
+        private var ticketsList: [TicketRecord] = []
+        @Published var searchedTickets: [TicketRecord] = []
         @Published var filterParams: TicketFilterParameters = TicketFilterParameters()
         @Published var selectedFilters: Set<String> = Set<String>()
         @Published var showFilter: Bool = false
@@ -35,7 +36,7 @@ extension TicketListView {
                 page.startIndex..<page.endIndex,
                 in: page
             )
-
+            
             // Create A NSRegularExpression
             let capturePattern = #"\?page=(\d+)?"#
             let captureRegex = try! NSRegularExpression(
@@ -55,7 +56,7 @@ extension TicketListView {
             }
             
             var names: [String] = []
-
+            
             // For each matched range, extract the capture group
             for rangeIndex in 0..<match.numberOfRanges {
                 let matchRange = match.range(at: rangeIndex)
@@ -70,16 +71,8 @@ extension TicketListView {
                 }
             }
             guard let num = names.last else {return 1}
-
+            
             return Int(num) ?? 1
-        }
-        
-        var searchedTickets: [TicketRecord] {
-            if searchKey.isEmpty {
-                return self.ticketsList
-            } else {
-                return self.ticketsList.filter { $0.title.localizedCaseInsensitiveContains(searchKey) }
-            }
         }
         
         @MainActor func load() async {
@@ -118,11 +111,12 @@ extension TicketListView {
             if pageOffset < self.ticketsList.count {
                 ticketsCopy.removeSubrange(pageOffset...self.ticketsList.count-1)
             }
-
+            
             for entry in newTickets.results {
                 ticketsCopy.append(entry)
             }
             self.ticketsList = ticketsCopy
+            self.searchedTickets = self.ticketsList
         }
         
         func setup(identity: AppIdentity, alertContext: AlertContext) {
@@ -151,6 +145,14 @@ extension TicketListView {
                 timer.invalidate()
             }
             RunLoop.current.add(timer, forMode:RunLoop.Mode.default)
+        }
+        
+        func updateSearch(searchKey: String) -> Void {
+            if searchKey.isEmpty {
+                self.searchedTickets = self.ticketsList
+            } else {
+                self.searchedTickets = self.ticketsList.filter { $0.title.localizedCaseInsensitiveContains(searchKey) }
+            }
         }
     }
 }
