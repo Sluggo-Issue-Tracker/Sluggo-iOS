@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2F144B2228594CD4009B9C32 /* TicketListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F144B2128594CD4009B9C32 /* TicketListViewModel.swift */; };
+		2F2CF81729988BAB0053336C /* NilContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2CF81629988BAB0053336C /* NilContext.swift */; };
 		2F2E6BFA2693B99C00968B3A /* Sluggo_SwiftUIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */; };
 		2F2E6BFC2693B99C00968B3A /* LaunchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F2E6BFB2693B99C00968B3A /* LaunchView.swift */; };
 		2F2E6BFE2693B99D00968B3A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F2E6BFD2693B99D00968B3A /* Assets.xcassets */; };
@@ -82,6 +83,7 @@
 
 /* Begin PBXFileReference section */
 		2F144B2128594CD4009B9C32 /* TicketListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TicketListViewModel.swift; sourceTree = "<group>"; };
+		2F2CF81629988BAB0053336C /* NilContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NilContext.swift; sourceTree = "<group>"; };
 		2F2E6BF62693B99C00968B3A /* Sluggo-SwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Sluggo-SwiftUI.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F2E6BF92693B99C00968B3A /* Sluggo_SwiftUIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sluggo_SwiftUIApp.swift; sourceTree = "<group>"; };
 		2F2E6BFB2693B99C00968B3A /* LaunchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchView.swift; sourceTree = "<group>"; };
@@ -327,6 +329,7 @@
 			children = (
 				2F54AFFB285B152900568913 /* SingleSelectionList.swift */,
 				2F5CC2402990DBEE00F563E0 /* AsyncContentView.swift */,
+				2F2CF81629988BAB0053336C /* NilContext.swift */,
 			);
 			path = "Generic Views";
 			sourceTree = "<group>";
@@ -488,6 +491,7 @@
 				2F2E6C582693BA0300968B3A /* PinnedTicketManager.swift in Sources */,
 				2F54AFFE285B20DD00568913 /* ErrorPage.swift in Sources */,
 				2FE2E9ED2994BC0A00AE8673 /* LoginViewModel.swift in Sources */,
+				2F2CF81729988BAB0053336C /* NilContext.swift in Sources */,
 				2F2E6C592693BA0300968B3A /* InviteManager.swift in Sources */,
 				2FDC3F2926DDB1CF0020A36D /* TeamsChoiceView.swift in Sources */,
 				2F2E6C4E2693BA0200968B3A /* ErrorMessage.swift in Sources */,

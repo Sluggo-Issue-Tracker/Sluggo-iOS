@@ -37,8 +37,8 @@ class JsonLoader: BaseLoader, CanNetworkRequest {
             let errorMessage = "Failure to decode retrieved error in JsonLoader Codable Request"
             return .failure(RESTException.failedRequest(message: errorMessage))
         }
-    
-        if record.code == "token_not_valid" {
+        // Don't try to use the refresh token again if the refresh token is expired or wrong.
+        if record.code == "token_not_valid" && response.url!.relativePath != "/auth/token/refresh"{
             let refreshRecord = await self.executeRefresh()
             switch refreshRecord {
             case .success(let refresh):
@@ -63,7 +63,7 @@ class JsonLoader: BaseLoader, CanNetworkRequest {
         do {
             let (data, response) = try await session.data(for: urlRequest)
             let resp = response as! HTTPURLResponse
-            if resp.statusCode <= 299 && resp.statusCode >= 200 {
+            if (200...299).contains(resp.statusCode) {
                 guard let record: T = Self.decode(data: data) else {
                     track(String(data: data, encoding: .utf8) ?? "Failed to print returned values")
                     let errorMessage = "Failure to decode retrieved model in JsonLoader Codable Request"
@@ -94,7 +94,7 @@ class JsonLoader: BaseLoader, CanNetworkRequest {
         do {
             let (data, response) = try await session.data(for: urlRequest)
             let resp = response as! HTTPURLResponse
-            if resp.statusCode <= 299 && resp.statusCode >= 200 {
+            if (200...299).contains(resp.statusCode) {
                 return .success(())
             } else {
                 if resp.statusCode == 401 {
