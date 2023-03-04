@@ -32,46 +32,13 @@ extension TicketListView {
         
         var nextPage: Int {
             guard let page = self.nextPageStr else {return 1 }
-            let pageRange = NSRange(
-                page.startIndex..<page.endIndex,
-                in: page
-            )
             
-            // Create A NSRegularExpression
-            let capturePattern = #"\?page=(\d+)?"#
-            let captureRegex = try! NSRegularExpression(
-                pattern: capturePattern,
-                options: []
-            )
-            
-            let matches = captureRegex.matches(
-                in: page,
-                options: [],
-                range: pageRange
-            )
-            
-            guard let match = matches.first else {
-                // Handle exception
+            // Create A Regular Expresion from 5.7
+            let capturePattern = /[\?&]page=(?<page>\d+)/
+            guard let match = try? capturePattern.firstMatch(in: page) else {
                 return 1
             }
-            
-            var names: [String] = []
-            
-            // For each matched range, extract the capture group
-            for rangeIndex in 0..<match.numberOfRanges {
-                let matchRange = match.range(at: rangeIndex)
-                
-                // Ignore matching the entire username string
-                if matchRange == pageRange { continue }
-                
-                // Extract the substring matching the capture group
-                if let substringRange = Range(matchRange, in: page) {
-                    let capture = String(page[substringRange])
-                    names.append(capture)
-                }
-            }
-            guard let num = names.last else {return 1}
-            
+            let num = match.page
             return Int(num) ?? 1
         }
         
