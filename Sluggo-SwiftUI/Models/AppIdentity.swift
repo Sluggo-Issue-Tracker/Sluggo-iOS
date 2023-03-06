@@ -106,8 +106,8 @@ class AppIdentity: Codable, ObservableObject {
 
     private func enqueueSave() {
         if self.persist {
-            DispatchQueue.global().async {
-                _ = self.saveToDisk()
+            Task { @MainActor [weak self] in
+                _ = self?.saveToDisk()
             }
         }
     }
