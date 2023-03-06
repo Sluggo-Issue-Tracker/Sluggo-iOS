@@ -12,7 +12,6 @@ struct HomeView: View {
     @StateObject var alertContext = AlertContext()
     var body: some View {
         TabView {
-            
             Text("Welcome Home \(identity.authenticatedUser!.username)" )
                 .tabItem {
                     Image(systemName: "house.fill")
@@ -29,11 +28,5 @@ struct HomeView: View {
                     Text("Members")
                 }
         }
-    }
-}
-
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        HomeView()
     }
 }

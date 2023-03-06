@@ -11,15 +11,18 @@ import SwiftUI
 
 extension TicketListView {
     
-    class ViewModel: ObservableObject {
+    class ViewModel: LoadableObject {
+        
+        @Published private(set) var loadState = LoadState.loading
+        
         var identity: AppIdentity?
         var alertContext: AlertContext?
-        @Published var ticketsList: [TicketRecord] = []
+        private var ticketsList: [TicketRecord] = []
+        @Published var searchedTickets: [TicketRecord] = []
         @Published var filterParams: TicketFilterParameters = TicketFilterParameters()
         @Published var selectedFilters: Set<String> = Set<String>()
         @Published var showFilter: Bool = false
         @Published var searchKey = ""
-        @Published var loadState = LoadState.loading
         @Published var showMessage = true
         @Published private var nextPageStr: String?
         
@@ -29,70 +32,22 @@ extension TicketListView {
         
         var nextPage: Int {
             guard let page = self.nextPageStr else {return 1 }
-            let pageRange = NSRange(
-                page.startIndex..<page.endIndex,
-                in: page
-            )
-
-            // Create A NSRegularExpression
-            let capturePattern = #"\?page=(\d+)?"#
-            let captureRegex = try! NSRegularExpression(
-                pattern: capturePattern,
-                options: []
-            )
             
-            let matches = captureRegex.matches(
-                in: page,
-                options: [],
-                range: pageRange
-            )
-            
-            guard let match = matches.first else {
-                // Handle exception
+            // Create A Regular Expresion from 5.7
+            let capturePattern = /[\?&]page=(?<page>\d+)/
+            guard let match = try? capturePattern.firstMatch(in: page) else {
                 return 1
             }
-            
-            var names: [String] = []
-
-            // For each matched range, extract the capture group
-            for rangeIndex in 0..<match.numberOfRanges {
-                let matchRange = match.range(at: rangeIndex)
-                
-                // Ignore matching the entire username string
-                if matchRange == pageRange { continue }
-                
-                // Extract the substring matching the capture group
-                if let substringRange = Range(matchRange, in: page) {
-                    let capture = String(page[substringRange])
-                    names.append(capture)
-                }
-            }
-            guard let num = names.last else {return 1}
-
+            let num = match.page
             return Int(num) ?? 1
         }
         
-        /// The current state of our ticket download
-        enum LoadState {
-            /// The download is currently in progress. This is the default.
-            case loading
-            
-            /// The download has finished, and tickets can now be displayed.
-            case success
-            
-            /// The download failed.
-            case failed
-        }
-        
-        var searchedTickets: [TicketRecord] {
-            if searchKey.isEmpty {
-                return self.ticketsList
-            } else {
-                return self.ticketsList.filter { $0.title.localizedCaseInsensitiveContains(searchKey) }
-            }
+        @MainActor func load() async {
+            await self.handleTicketsList(page: 1)
         }
         
         @MainActor func handleTicketsList(page: Int) async {
+            
             let ticketManager = TicketManager(identity: self.identity!)
             let ticketsResult = await ticketManager.listTeamTickets(page: page, queryParams: self.filterParams)
             switch ticketsResult {
@@ -123,11 +78,12 @@ extension TicketListView {
             if pageOffset < self.ticketsList.count {
                 ticketsCopy.removeSubrange(pageOffset...self.ticketsList.count-1)
             }
-
+            
             for entry in newTickets.results {
                 ticketsCopy.append(entry)
             }
             self.ticketsList = ticketsCopy
+            self.searchedTickets = self.ticketsList
         }
         
         func setup(identity: AppIdentity, alertContext: AlertContext) {
@@ -156,6 +112,14 @@ extension TicketListView {
                 timer.invalidate()
             }
             RunLoop.current.add(timer, forMode:RunLoop.Mode.default)
+        }
+        
+        func updateSearch(searchKey: String) -> Void {
+            if searchKey.isEmpty {
+                self.searchedTickets = self.ticketsList
+            } else {
+                self.searchedTickets = self.ticketsList.filter { $0.title.localizedCaseInsensitiveContains(searchKey) }
+            }
         }
     }
 }

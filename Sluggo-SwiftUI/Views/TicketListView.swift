@@ -15,83 +15,62 @@ struct TicketListView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                switch viewModel.loadState {
-                case .loading:
-                    VStack {
-                        Text("Retrieving Tickets")
-                        ProgressView()
-                    }
-                case .failed:
-                    ErrorPage(message: "Failed to retrieve Tickets") {
-                        // When the user attempts to retry, immediately switch back to
-                        // the loading state.
-                        viewModel.loadState = .loading
-                        
-                        Task {
-                            // Important: wait 0.5 seconds before retrying the download, to
-                            // avoid jumping straight back to .failed in case there are
-                            // internet problems.
-                            try await Task.sleep(nanoseconds: 500_000_000)
-                            await viewModel.handleTicketsList(page: 1)
-                        }
-                    }
-                case .success:
-                    TicketList(tickets: $viewModel.ticketsList) {
-                        Group {
-                            if viewModel.hasMore {
-                                ProgressView()
-                                    .task {
-                                        self.viewModel.showMessage = true
-                                        await self.viewModel.handleTicketsList(page: viewModel.nextPage)
-                                    }
-                            } else {
-                                if viewModel.showMessage {
-                                    Text("Congrats! No More Tickets")
-                                        .font(.headline)
-                                        .frame(maxWidth: .infinity, alignment: .center)
-                                        .onAppear(perform: viewModel.setDismissTimer)
+            AsyncContentView(source: viewModel,
+                             loadingMessage: "Retrieving Tickets",
+                             errorMessage: "Failed to retrieve Tickets") {
+                TicketList(tickets: $viewModel.searchedTickets) {
+                    Group {
+                        if viewModel.hasMore {
+                            ProgressView()
+                                .task {
+                                    self.viewModel.showMessage = true
+                                    await self.viewModel.handleTicketsList(page: viewModel.nextPage)
                                 }
-                                
+                        } else {
+                            if viewModel.showMessage {
+                                Text("Congrats! No More Tickets")
+                                    .font(.headline)
+                                    .frame(maxWidth: .infinity, alignment: .center)
+                                    .onAppear(perform: viewModel.setDismissTimer)
                             }
+                            
                         }
                     }
-                    .searchable(text: $viewModel.searchKey)
-                    .refreshable {
-                        self.viewModel.showMessage = true
-                        await viewModel.handleTicketsList(page: 1)
-                    }
-                    
+                }
+                .searchable(text: $viewModel.searchKey)
+                .onChange(of: viewModel.searchKey, perform: viewModel.updateSearch)
+                .refreshable {
+                    self.viewModel.showMessage = true
+                    await viewModel.load()
                 }
             }
-            .task {
-                viewModel.setup(identity: identity, alertContext: alertContext)
-                await viewModel.handleTicketsList(page: 1)
-            }
-            .toolbar {
-                Menu {
-                    Button {} label: {Label("Create New", systemImage: "plus")}
-                    Button {viewModel.showFilter.toggle()} label: {Label("Filter", systemImage: "folder")}
-                } label: {
-                    Image(systemName: "ellipsis")
-                }
-            }
-            .sheet(isPresented: $viewModel.showFilter, onDismiss: viewModel.onFilter) {
-                NavigationView {
-                    FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
-                        .navigationTitle("Filter")
-                        .toolbar {
-                            ToolbarItem {
-                                Button("Done") {
-                                    viewModel.showFilter.toggle()
-                                }
-                            }
-                        }
-                }
-            }
-            .navigationTitle("Tickets")
+         .task {
+             viewModel.setup(identity: identity, alertContext: alertContext)
+             await viewModel.load()
+         }
+         .toolbar {
+             Menu {
+                 Button {} label: {Label("Create New", systemImage: "plus")}
+                 Button {viewModel.showFilter.toggle()} label: {Label("Filter", systemImage: "folder")}
+             } label: {
+                 Image(systemName: "ellipsis")
+             }
+         }
+         .sheet(isPresented: $viewModel.showFilter, onDismiss: viewModel.onFilter) {
+             NavigationView {
+                 FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
+                     .navigationTitle("Filter")
+                     .toolbar {
+                         ToolbarItem {
+                             Button("Done") {
+                                 viewModel.showFilter.toggle()
+                             }
+                         }
+                     }
+             }
+         }
+         .navigationTitle("Tickets")
         }
-        .navigationViewStyle(.stack)
         .alert(context: alertContext)
     }
 }
@@ -106,43 +85,26 @@ struct FilterView : View {
     var body: some View {
         List {
             Section("Assigned User") {
-                if(teamMembers.isEmpty) {
-                    Text("None").foregroundColor(.gray)
-                    
-                }
-                else {
-                    SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser) { item in
-                        HStack {
-                            Text(item.getTitle())
-                            Spacer()
-                        }
+                SingleSelectionList (items: teamMembers, didChange:$filter.didChange, selection:$filter.assignedUser) { item in
+                    HStack {
+                        Text(item.getTitle())
+                        Spacer()
                     }
                 }
             }
             Section("Tags") {
-                if(ticketTags.isEmpty) {
-                    Text("None").foregroundColor(.gray)
-                }
-                else {
-                    SingleSelectionList (items: ticketTags, didChange:$filter.didChange, selection:$filter.ticketTag) { item in
-                        HStack {
-                            Text(item.getTitle())
-                            Spacer()
-                        }
+                SingleSelectionList (items: ticketTags, didChange:$filter.didChange, selection:$filter.ticketTag) { item in
+                    HStack {
+                        Text(item.getTitle())
+                        Spacer()
                     }
                 }
             }
             Section("Statuses") {
-                if(ticketStatuses.isEmpty) {
-                    Text("None").foregroundColor(.gray)
-                    
-                }
-                else {
-                    SingleSelectionList (items: ticketStatuses, didChange:$filter.didChange, selection:$filter.ticketStatus) { item in
-                        HStack {
-                            Text(item.getTitle())
-                            Spacer()
-                        }
+                SingleSelectionList (items: ticketStatuses, didChange:$filter.didChange, selection:$filter.ticketStatus) { item in
+                    HStack {
+                        Text(item.getTitle())
+                        Spacer()
                     }
                 }
             }
@@ -152,11 +114,10 @@ struct FilterView : View {
     
     @Sendable func doLoad() async {
         let tagManager = TagManager(identity: self.identity)
-        let statusManager = StatusManager(identity: self.identity)
+        let statusManger = StatusManager(identity: self.identity)
         let memberManager = MemberManager(identity: self.identity)
         
-        let tagsResult = await tagManager.listFromTeams()
-        switch tagsResult {
+        switch await tagManager.listFromTeams() {
         case .success(let tags):
             self.ticketTags = tags
         case .failure(let error):
@@ -164,8 +125,7 @@ struct FilterView : View {
             self.alertContext.presentError(error: error)
         }
         
-        let statusResult = await statusManager.listFromTeams()
-        switch statusResult {
+        switch await statusManger.listFromTeams() {
         case .success(let statuses):
             self.ticketStatuses = statuses
         case .failure(let error):
@@ -189,28 +149,25 @@ struct TicketList<Content:View>: View {
     //    Simple struct to account for all the fancy styling on lists and Zstack
     @Binding var tickets: [TicketRecord]
     var loadMore: () -> Content
-    @State var selected: TicketRecord?
     var body: some View {
-        List {
-            ForEach($tickets) { $ticket in
-                ZStack{
-                    NavigationLink(destination: TicketDetail(ticket: $ticket), tag: ticket, selection: $selected) {
-                        EmptyView()
-                    }
-                    .hidden()
-                    TicketPill(ticket: $ticket)
-                        .overlay(selected == ticket ? Color(white: 0.75, opacity: 0.25) : Color.clear)
-                        .onTapGesture {
-                            self.selected = ticket
-                        }
+        List($tickets, id: \.self) { $ticket in
+            ZStack {
+                NavigationLink(destination: TicketDetail(ticket: $ticket)) {
+                    EmptyView()
                 }
+                TicketPill(ticket: $ticket)
             }
             .listRowSeparator(.hidden)
             .listRowInsets(.none)
-            .listRowBackground(Color.clear)
-            loadMore()
+//            .listRowBackground(Color.clear) // If we set it to clear we can't have the pill change color
+            
         }
+//        .navigationDestination(for: TicketRecord.self) { ticket in
+//            TicketDetail(ticket: ticket)
+//        }
         .listStyle(.plain)
+        loadMore()
+        
     }
 }
 

@@ -213,11 +213,11 @@ struct ExtendedPicker<Item: HasTitle & Identifiable & Hashable>: View {
                 Text("More")
             }
         } label: {
-            HStack(spacing: 2) {
-                Text("\(selected?.getTitle() ?? "None")")
+            //HStack(spacing: 2) {
+                Text("\(selected?.getTitle() ?? "None") \(Image(systemName: "chevron.up.chevron.down"))")
                     .fixedSize()
-                Image(systemName: "chevron.up.chevron.down")
-            }
+                
+            //}
         }
         .transaction { transaction in
             transaction.animation = nil
