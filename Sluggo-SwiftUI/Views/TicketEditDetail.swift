@@ -77,7 +77,7 @@ struct TicketEditDetail: View {
 //                    }
 //                    .pickerStyle(.menu)
                 }
-                Section() {
+                Section {
                     Picker("Status", selection: $ticketStatus) {
                         Text("None").tag(nil as StatusRecord?)
                         Divider()
@@ -88,7 +88,7 @@ struct TicketEditDetail: View {
                 }
                 Section {
                     HStack {
-                        Text("Assigned User")
+                        Text("Tags")
                         Spacer()
                         Menu {
                             ForEach(ticketAllTags) { tag in
@@ -101,12 +101,12 @@ struct TicketEditDetail: View {
                         }
                     }
                 }
-                Section(header: Text("Date Due")) {
-                    DatePicker(selection: $ticketDueDate,
-                               label: {
-                        Toggle("Date", isOn: $dateToggle).labelsHidden()
-                        // Toggle throwing strange warning, bug Apple needs to fix
-                    })
+                Section {
+                    Toggle("Due Date", isOn: $dateToggle.animation())
+                    if dateToggle {
+                        DatePicker("Date", selection: $ticketDueDate).labelsHidden()
+                        // Toggle throwing strange warning
+                    }
                 }
                 Section() {
                     TextEditor(text: $ticketDescription ?? "")
@@ -198,12 +198,10 @@ struct ExtendedPicker<Item: HasTitle & Identifiable & Hashable>: View {
     
     var body: some View {
         Menu {
-            Button("None") {
-                selected = nil
-            }
-            ForEach(items, id: \.self) { item in
-                Button(item.getTitle()) {
-                    selected = item
+            Picker("", selection: $selected) {
+                Text("None").tag(nil as Item?)
+                ForEach(items, id: \.self) { item in
+                    Text(item.getTitle()).tag(item as Item?)
                 }
             }
             Divider()
@@ -213,11 +211,14 @@ struct ExtendedPicker<Item: HasTitle & Identifiable & Hashable>: View {
                 Text("More")
             }
         } label: {
-            //HStack(spacing: 2) {
-                Text("\(selected?.getTitle() ?? "None") \(Image(systemName: "chevron.up.chevron.down"))")
+            HStack(spacing: 2) {
+                //Text("\(selected?.getTitle() ?? "None") \(Image(systemName: "chevron.up.chevron.down"))")
+                Text("\(selected?.getTitle() ?? "None")")
                     .fixedSize()
+                Image(systemName: "chevron.up.chevron.down")
+                    
                 
-            //}
+            }
         }
         .transaction { transaction in
             transaction.animation = nil
@@ -231,18 +232,16 @@ struct PickerDetail <Item: HasTitle & Identifiable & Hashable>: View {
     @Binding var selected: Item?
     
     var body: some View {
-        List {
-            Button("None") {
-                selected = nil
-            }
-            .foregroundColor(.black)
-            ForEach(items) { item in
-                Button(item.getTitle()) {
-                    selected = item
+        Form {
+            Picker("", selection: $selected) {
+                Text("None").tag(nil as Item?)
+                ForEach(items, id: \.self) { item in
+                    Text(item.getTitle()).tag(item as Item?)
                 }
-                .foregroundColor(.black)
-            }
+            }.pickerStyle(.inline)
         }
+        .navigationBarTitle("Edit")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
@@ -251,4 +250,10 @@ func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
         get: { lhs.wrappedValue ?? rhs },
         set: { lhs.wrappedValue = $0 }
     )
+}
+
+struct Previews_TicketEditDetail_Previews: PreviewProvider {
+    static var previews: some View {
+        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
+    }
 }
