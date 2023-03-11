@@ -31,9 +31,7 @@ struct TicketDetail: View {
             }
             Section(header: Text("Tags")) {
                 NilContext(item: ticket.tagList) {
-                    ForEach(ticket.tagList) { tag in
-                        Text(tag.getTitle())
-                    }
+                    Text((ticket.tagList.map({$0.getTitle()})).joined(separator: ", "))
                 }
             }
             Section(header: Text("Date Due")) {

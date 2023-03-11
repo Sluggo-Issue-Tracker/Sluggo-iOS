@@ -27,7 +27,6 @@ struct TicketEditDetail: View {
     @State private var teamMembers: [MemberRecord] = []
     @State private var ticketStatuses: [StatusRecord] = []
     @State private var ticketAllTags: [TagRecord] = []
-    @State private var multiSelection = Set<UUID>()
     
     @State private var showAlert = false
     
