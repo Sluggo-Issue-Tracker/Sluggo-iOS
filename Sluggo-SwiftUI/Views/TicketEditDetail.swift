@@ -22,12 +22,14 @@ struct TicketEditDetail: View {
     @State private var ticketTags: [TagRecord] = []
     @State private var ticketDueDate = Date()
     @State private var dateToggle = false
-    @State private var ticketDescription: String?
+    @State private var ticketDescription: String = ""
 
     @State private var teamMembers: [MemberRecord] = []
     @State private var ticketStatuses: [StatusRecord] = []
     @State private var ticketAllTags: [TagRecord] = []
     @State private var multiSelection = Set<UUID>()
+    
+    @State private var showAlert = false
     
     init(ticket: Binding<TicketRecord>, showView: Binding<Bool>) {
         
@@ -40,7 +42,7 @@ struct TicketEditDetail: View {
         self._ticketTags = State(initialValue: self.ticket.tagList)
         self._dateToggle = State(initialValue: {self.ticket.dueDate != nil}())
         self._ticketDueDate = State(initialValue: {self.ticket.dueDate ?? Date()}())
-        self._ticketDescription = State(initialValue: self.ticket.description)
+        self._ticketDescription = State(initialValue: {self.ticket.description ?? ""}())
 
     }
     
@@ -48,57 +50,33 @@ struct TicketEditDetail: View {
         NavigationStack {
             List {
                 Section {
-                    TextField("Title", text: $ticketTitle)
+                    TextField("Title (Required)", text: $ticketTitle)
                 }
                 Section {
-                    HStack {
-                        Text("Assigned User")
-                        Spacer()
-                        ExtendedPicker(items: $teamMembers, selected: $ticketUser)
-                       
-                    }
-                    // PickerDetail(items: $teamMembers)
-//                    Picker("Assigned User", selection: $ticketUser) {
-//                        Text("None").tag(nil as MemberRecord?)
-//                        Divider()
-//                        ForEach(teamMembers, id: \.self) { member in
-//                            Text(member.owner.username).tag(member as MemberRecord?)
-//                        }
-//                        Divider()
-//                        Picker("More", selection: $ticketUser) {
-//                            Text("None").tag(nil as MemberRecord?)
-//                            ForEach(teamMembers, id: \.self) { moreMember in
-//                                Text(moreMember.owner.username).tag(moreMember as MemberRecord?)
-//                            }
-//
-//
-//                        }.tag(nil as MemberRecord?)
-//                        .pickerStyle(.navigationLink)
-//                    }
-//                    .pickerStyle(.menu)
+                    ExtendedPicker(title: "Assigned User", items: $teamMembers, selected: $ticketUser)
                 }
                 Section {
-                    Picker("Status", selection: $ticketStatus) {
-                        Text("None").tag(nil as StatusRecord?)
-                        Divider()
-                        ForEach(ticketStatuses, id: \.self) { status in
-                            Text(status.getTitle()).tag(status as StatusRecord?)
-                        }
-                    }
+                    ExtendedPicker(title: "Statuses", items: $ticketStatuses, selected: $ticketStatus)
                 }
                 Section {
-                    HStack {
-                        Text("Tags")
-                        Spacer()
-                        Menu {
-                            ForEach(ticketAllTags) { tag in
-                                Button(tag.getTitle()) {
-                                    
-                                }
+                    ZStack{
+                        HStack {
+                            NilContext(item: ticketTags) {
+                                Text((ticketTags.map({$0.getTitle()})).joined(separator: ", "))
+                            } nilContent: {
+                                Text("Tags")
                             }
-                        } label: {
+                            .fixedSize(horizontal: false, vertical: true)
+                            Spacer()
                             Image(systemName: "plus.square")
+                                .foregroundColor(.blue)
+                            }
+                        NavigationLink("Tags") {
+                            MultiSelectionList(items: $ticketAllTags, selected: $ticketTags)
+                                .navigationBarTitle("Tags")
+                                .navigationBarTitleDisplayMode(.inline)
                         }
+                        .opacity(0)
                     }
                 }
                 Section {
@@ -109,7 +87,7 @@ struct TicketEditDetail: View {
                     }
                 }
                 Section() {
-                    TextEditor(text: $ticketDescription ?? "")
+                    TextField("Description", text: $ticketDescription, axis: .vertical)
                         .frame(minHeight: 100, alignment: .topLeading)
                 }
             }
@@ -120,13 +98,19 @@ struct TicketEditDetail: View {
                     self.showView.toggle()
                     
                 }, trailing: Button("Done") {
-                    Task.init(priority: .userInitiated) {
-                        await self.doUpdate()
+                    if ticketTitle.isEmpty {
+                        showAlert = true
+                    } else {
+                        Task.init(priority: .userInitiated) {
+                            await self.doUpdate()
+                        }
+                        self.showView.toggle()
                     }
-                    self.showView.toggle()
-                }
-                )
+                })
             .task(doLoad)
+            .alert("Title Required", isPresented: $showAlert) {
+                Button("OK", role: .cancel) { }
+            }
         }
     }
     
@@ -140,7 +124,7 @@ struct TicketEditDetail: View {
                             assignedUser: self.ticketUser,
                                   status: self.ticketStatus,
                                    title: self.ticketTitle,
-                             description: self.ticketDescription,
+                             description: { self.ticketDescription.isEmpty ? nil : self.ticketDescription}(),
                                  dueDate: { dateToggle ? self.ticketDueDate : nil }(),
                                  created: self.ticket.created,
                                activated: self.ticket.activated,
@@ -191,69 +175,8 @@ struct TicketEditDetail: View {
     }
 }
 
-struct ExtendedPicker<Item: HasTitle & Identifiable & Hashable>: View {
-    
-    @Binding var items: [Item]
-    @Binding var selected: Item?
-    
-    var body: some View {
-        Menu {
-            Picker("", selection: $selected) {
-                Text("None").tag(nil as Item?)
-                ForEach(items, id: \.self) { item in
-                    Text(item.getTitle()).tag(item as Item?)
-                }
-            }
-            Divider()
-            NavigationLink() {
-                PickerDetail(items: $items, selected: $selected)
-            } label: {
-                Text("More")
-            }
-        } label: {
-            HStack(spacing: 2) {
-                //Text("\(selected?.getTitle() ?? "None") \(Image(systemName: "chevron.up.chevron.down"))")
-                Text("\(selected?.getTitle() ?? "None")")
-                    .fixedSize()
-                Image(systemName: "chevron.up.chevron.down")
-                    
-                
-            }
-        }
-        .transaction { transaction in
-            transaction.animation = nil
-        }
-    }
-}
-
-struct PickerDetail <Item: HasTitle & Identifiable & Hashable>: View {
-    
-    @Binding var items: [Item]
-    @Binding var selected: Item?
-    
-    var body: some View {
-        Form {
-            Picker("", selection: $selected) {
-                Text("None").tag(nil as Item?)
-                ForEach(items, id: \.self) { item in
-                    Text(item.getTitle()).tag(item as Item?)
-                }
-            }.pickerStyle(.inline)
-        }
-        .navigationBarTitle("Edit")
-        .navigationBarTitleDisplayMode(.inline)
-    }
-}
-
-func ??<T>(lhs: Binding<Optional<T>>, rhs: T) -> Binding<T> {
-    Binding(
-        get: { lhs.wrappedValue ?? rhs },
-        set: { lhs.wrappedValue = $0 }
-    )
-}
-
-struct Previews_TicketEditDetail_Previews: PreviewProvider {
-    static var previews: some View {
-        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
-    }
-}
+//struct Previews_TicketEditDetail_Previews: PreviewProvider {
+//    static var previews: some View {
+//        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
+//    }
+//}

@@ -20,50 +20,39 @@ struct TicketDetail: View {
                 Text("\(ticket.title)")
             }
             Section(header: Text("Assigned User")) {
-                if(ticket.assignedUser == nil) {
-                    Text("None").foregroundColor(.gray)
-                }
-                else {
+                NilContext(item: ticket.assignedUser) {
                     Text("\(ticket.assignedUser?.getTitle() ?? "")")
                 }
             }
             Section(header: Text("Status")) {
-                
-                Text("\(ticket.status?.getTitle() ?? "")")
+                NilContext(item: ticket.status) {
+                    Text("\(ticket.status?.getTitle() ?? "")")
+                }
             }
             Section(header: Text("Tags")) {
-                if(ticket.tagList.isEmpty) {
-                    Text("None").foregroundColor(.gray)
-                }
-                else {
+                NilContext(item: ticket.tagList) {
                     ForEach(ticket.tagList) { tag in
-                        Text(tag.title)
+                        Text(tag.getTitle())
                     }
                 }
             }
             Section(header: Text("Date Due")) {
-                if(ticket.dueDate == nil) {
-                    Text("None").foregroundColor(.gray)
-                }
-                else {
+                NilContext(item: ticket.dueDate) {
                     Text(ticket.dueDate ?? Date(), style: .date)
                 }
             }
             Section(header: Text("Description")) {
-                if(ticket.description == nil) {
-                    Text("None").foregroundColor(.gray)
-                }
-                else {
+                NilContext(item: ticket.description) {
                     Text("\(ticket.description ?? "")")
-                        .frame(minHeight: 100, alignment: .topLeading)
                 }
+                .frame(minHeight: 100, alignment: .topLeading)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarItems(trailing: Button("Edit"){
             self.showView.toggle()
         })
-        .fullScreenCover(isPresented: $showView) {
+        .sheet(isPresented: $showView) {
             TicketEditDetail(ticket: $ticket, showView: self.$showView)
                 
         }

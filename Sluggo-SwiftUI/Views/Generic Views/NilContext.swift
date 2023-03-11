@@ -11,18 +11,29 @@ import SwiftUI
 
 struct NilContext<T, Content: View>: View {
     
-    var item: T
+    let item: T
     
+    let content: () -> Content
+    let nilContent: () -> Content?
     
-    @ViewBuilder var content: Content
+    init(item: T, @ViewBuilder content: @escaping () -> Content, @ViewBuilder nilContent: @escaping () -> Content? = { nil }) {
+        self.item = item
+        self.content = content
+        self.nilContent = nilContent
+    }
     
     var body: some View {
         
         if(check()) {
-            Text("None").foregroundColor(.gray)
+            if(nilContent() == nil) {
+                Text("None")
+                    .foregroundColor(.gray)
+            } else {
+                nilContent()
+            }
         }
         else {
-            content
+            content()
         }
     }
     
