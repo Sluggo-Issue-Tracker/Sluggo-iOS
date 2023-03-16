@@ -80,4 +80,3 @@ func unwindPagination<M: TeamPaginatedListable>(manager: M,
 
     unwindPaginationRecurse(state: state)
 }
-
