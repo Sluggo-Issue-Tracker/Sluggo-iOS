@@ -44,32 +44,32 @@ struct TicketListView: View {
                     await viewModel.load()
                 }
             }
-         .task {
-             viewModel.setup(identity: identity, alertContext: alertContext)
-             await viewModel.load()
-         }
-         .toolbar {
-             Menu {
-                 Button {} label: {Label("Create New", systemImage: "plus")}
-                 Button {viewModel.showFilter.toggle()} label: {Label("Filter", systemImage: "folder")}
-             } label: {
-                 Image(systemName: "ellipsis")
-             }
-         }
-         .sheet(isPresented: $viewModel.showFilter, onDismiss: viewModel.onFilter) {
-             NavigationView {
-                 FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
-                     .navigationTitle("Filter")
-                     .toolbar {
-                         ToolbarItem {
-                             Button("Done") {
-                                 viewModel.showFilter.toggle()
-                             }
-                         }
-                     }
-             }
-         }
-         .navigationTitle("Tickets")
+            .task {
+                viewModel.setup(identity: identity, alertContext: alertContext)
+                await viewModel.load()
+            }
+            .toolbar {
+                Menu {
+                    Button {} label: {Label("Create New", systemImage: "plus")}
+                    Button {viewModel.showFilter.toggle()} label: {Label("Filter", systemImage: "folder")}
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
+            .sheet(isPresented: $viewModel.showFilter, onDismiss: viewModel.onFilter) {
+                NavigationView {
+                    FilterView(filter: $viewModel.filterParams, identity: identity, alertContext: alertContext)
+                        .navigationTitle("Filter")
+                        .toolbar {
+                            ToolbarItem {
+                                Button("Done") {
+                                    viewModel.showFilter.toggle()
+                                }
+                            }
+                        }
+                }
+            }
+            .navigationTitle("Tickets")
         }
         .alert(context: alertContext)
     }
@@ -150,20 +150,15 @@ struct TicketList<Content:View>: View {
     @Binding var tickets: [TicketRecord]
     var loadMore: () -> Content
     var body: some View {
-        List(tickets, id: \.self) { ticket in
+        List($tickets, id: \.self) { $ticket in
             ZStack {
-                NavigationLink(value: ticket) {
+                NavigationLink(destination: TicketDetail(ticket: $ticket)) {
                     EmptyView()
                 }
-                TicketPill(ticket: ticket)
+                TicketPill(ticket: $ticket)
             }
             .listRowSeparator(.hidden)
             .listRowInsets(.none)
-//            .listRowBackground(Color.clear) // If we set it to clear we can't have the pill change color
-            
-        }
-        .navigationDestination(for: TicketRecord.self) { ticket in
-            Text(ticket.title)
         }
         .listStyle(.plain)
         loadMore()
