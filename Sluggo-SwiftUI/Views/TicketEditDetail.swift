@@ -110,6 +110,7 @@ struct TicketEditDetail: View {
             .alert("Title Required", isPresented: $showAlert) {
                 Button("OK", role: .cancel) { }
             }
+            .alert(context: alertContext)
         }
     }
     
@@ -173,9 +174,3 @@ struct TicketEditDetail: View {
         }
     }
 }
-
-//struct Previews_TicketEditDetail_Previews: PreviewProvider {
-//    static var previews: some View {
-//        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
-//    }
-//}
